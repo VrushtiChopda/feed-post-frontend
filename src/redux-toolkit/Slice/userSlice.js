@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import Cookies from 'js-cookie';
 const initialState = {
     user: [],
     loading: false,
@@ -18,9 +18,16 @@ export const userRegister = createAsyncThunk('/register', async (userData) => {
 })
 
 export const userLogin = createAsyncThunk('/login', async (userData) => {
+    // const token = loginDetail.payload.data
     try {
         const data = await axios.post('http://localhost:3000/user/login', userData)
         console.log(data.data)
+        const token = data.data.data
+        if (token) {
+            Cookies.set('token', token)
+        } else {
+            console.log("token not available")
+        }
         return data.data
     } catch (error) {
         throw error

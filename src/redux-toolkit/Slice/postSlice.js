@@ -36,7 +36,7 @@ export const getPost = createAsyncThunk('/getPost', async () => {
 
 export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postData }) => {
     const token = Cookies.get('token')
-    console.log(token, "token")
+    // console.log(token, "token")
     try {
         const data = await axios.put(`http://localhost:3000/post/updatePost/${postId}`, postData,
             {

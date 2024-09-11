@@ -12,6 +12,7 @@ import { addComment, deleteComment, editComment, getComment } from '../../redux-
 import user from '../../assets/user.png'
 import { jwtDecode } from 'jwt-decode'
 import Cookies from 'js-cookie'
+import { addReply, getReply } from '../../redux-toolkit/Slice/replySlice'
 
 const PostDetail = () => {
     const location = useLocation()
@@ -26,6 +27,8 @@ const PostDetail = () => {
     const [editingCommentId, setEditingCommentId] = useState(null)
     const [editedComment, setEditedComment] = useState('')
 
+    const [reply, setReply] = useState(null)
+    const [replyData, setReplyData] = useState([])
     const token = Cookies.get('token')
     const authorizedUser = jwtDecode(token)
 
@@ -113,6 +116,21 @@ const PostDetail = () => {
             handleGetComment()
         }
     }
+
+    const handleAddReply = async (commentId) => {
+        // console.log(parentCommentId, "reply")
+        const res = await dispatch(addReply(reply))
+        console.log(res.data, "res in handleAddReply")
+        handleGetReply(commentId)
+    }
+
+    const handleGetReply = async () => {
+        console.log(comment, "comment")
+        const res = await dispatch(getReply(comment._id))
+        console.log(res.data, "res in handleGetReply")
+        setReplyData(res.data)
+        console.log(replyData, "replyData")
+    }
     useEffect(() => {
         handleGetComment()
     }, [])
@@ -162,7 +180,7 @@ const PostDetail = () => {
                         </div>
                     </div>
                     <div className='col-lg-6 col-md-6 col-sm-12'>
-                        <div className='m-3 w-75'>
+                        <div className='m-3'>
                             <div className='d-flex'>
                                 <TextareaAutosize
                                     className='w-100 rounded p-1 mx-2'
@@ -175,47 +193,92 @@ const PostDetail = () => {
                                 </div>
                             </div>
                             {commentById.map((comment) => (
-                                <div key={comment._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
-                                    <div className='d-flex'>
-                                        <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
-                                        <div className='px-2'>
-                                            <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
+                                <div>
+                                    <div key={comment._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                                        <div className='d-flex'>
+                                            <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
+                                            <div className='px-2'>
+                                                <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
 
-                                            {
-                                                editingCommentId === comment._id ? (
-                                                    <div className='d-flex'>
-                                                        <Input
-                                                            value={editedComment}
-                                                            onChange={(e) => setEditedComment(e.target.value)}
-                                                            className='me-3'
-                                                        />
-                                                        <button
-                                                            className='btn btn-sm btn-outline-primary'
-                                                            onClick={() => handleUpdatedComment(comment._id)}
-                                                        >Update</button>
-                                                    </div>
-                                                ) : (
-                                                    <p className='m-0 p-0'>{comment.comment}</p>
-                                                )
-                                            }
+                                                {
+                                                    editingCommentId === comment._id ? (
+                                                        <div className='d-flex'>
+                                                            <Input
+                                                                value={editedComment}
+                                                                onChange={(e) => setEditedComment(e.target.value)}
+                                                                className='me-3'
+                                                            />
+                                                            <button
+                                                                className='btn btn-sm btn-outline-primary'
+                                                                onClick={() => handleUpdatedComment(comment._id)}
+                                                            >Update</button>
+                                                        </div>
+                                                    ) : (
+                                                        <p className='m-0 p-0'>{comment.comment}</p>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+
+                                        {
+                                            authorizedUser && authorizedUser._id === comment.userId._id && (
+                                                <div className='d-flex justify-content-end mt-2'>
+                                                    <LiaEdit
+                                                        className='mx-2'
+                                                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                                        onClick={() => handleEditComment(comment._id, comment.comment)}
+                                                    />
+                                                    <MdOutlineDelete
+                                                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                                        onClick={() => handleDeleteComment(comment._id)}
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                    <div className='d-flex justify-content-end'>
+                                        <div className='w-75'>
+                                            <div className='d-flex'>
+                                                <TextareaAutosize
+                                                    className='w-100 rounded p-1 mx-2'
+                                                    placeholder="Add a reply"
+                                                    value={reply}
+                                                    onChange={(e) => setReply(e.target.value)}
+                                                />
+                                                <div>
+                                                    <button
+                                                        className='btn btn-outline-primary me-2'
+                                                        onClick={() => handleAddReply(comment._id)}
+                                                    >Add</button>
+                                                </div>
+                                            </div>
+                                            {/* <div className='d-flex'>
+                                                <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
+                                                <div className='px-2'>
+                                                    <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
+
+                                                    {/* {
+                                                        editingCommentId === comment._id ? (
+                                                            <div className='d-flex'>
+                                                                <Input
+                                                                    value={editedComment}
+                                                                    onChange={(e) => setEditedComment(e.target.value)}
+                                                                    className='me-3'
+                                                                />
+                                                                <button
+                                                                    className='btn btn-sm btn-outline-primary'
+                                                                    onClick={() => handleUpdatedComment(comment._id)}
+                                                                >Update</button>
+                                                            </div>
+                                                        ) : ( */}
+                                            {/* <p className='m-0 p-0'>{replyData}</p> */}
+                                            {/* )
+                                                    } */}
+                                            {/* </div>
+                                    </div> */}
+
                                         </div>
                                     </div>
-
-                                    {
-                                        authorizedUser && authorizedUser._id === comment.userId._id && (
-                                            <div className='d-flex justify-content-end mt-2'>
-                                                <LiaEdit
-                                                    className='mx-2'
-                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                    onClick={() => handleEditComment(comment._id, comment.comment)}
-                                                />
-                                                <MdOutlineDelete
-                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                    onClick={() => handleDeleteComment(comment._id)}
-                                                />
-                                            </div>
-                                        )
-                                    }
                                 </div>
                             ))}
                         </div>
@@ -256,8 +319,8 @@ const PostDetail = () => {
                             </Formik>
                         </Modal.Body>
                     </Modal>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     )
 }

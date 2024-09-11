@@ -49,7 +49,7 @@ const Post = () => {
         setShow(true);
     };
 
-    //------ Navigate to post detail page -----
+    //------ Navigate to post detail page -------
     const handleClick = (post) => {
         navigate('/postdetail', { state: { postdata: post } });
     };

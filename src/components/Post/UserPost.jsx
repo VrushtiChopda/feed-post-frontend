@@ -40,8 +40,8 @@ const UserPost = () => {
     //------------ get all post with comments ------------------
     const getAllPosts = async () => {
         const res = await dispatch(getPostByUserId())
-        setPosts(res.payload.data.data)
-        res.payload.data.data.forEach(post => {
+        setPosts(res?.payload?.data?.data)
+        res?.payload?.data?.data?.forEach(post => {
             handleGetComment(post._id)
         })
     }

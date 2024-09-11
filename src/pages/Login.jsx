@@ -3,7 +3,7 @@ import React from 'react'
 import { object, string } from 'yup'
 import './login.css'
 import { Link, useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
+
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify'
 import { useDispatch } from 'react-redux'
@@ -20,12 +20,7 @@ const Login = () => {
     const handleLoginSubmit = async (data) => {
         try {
             const loginDetail = await dispatch(userLogin(data))
-            const token = loginDetail.payload.data
-            if (token) {
-                Cookies.set('token', token, { expires: 1 / 24 })
-            } else {
-                console.log("token not available")
-            }
+           
 
             if (loginDetail.meta.requestStatus === 'fulfilled') {
                 toast.success("Login sucessfully", {

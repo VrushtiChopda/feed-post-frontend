@@ -11,9 +11,10 @@ const initialState = {
 export const getPostByUserId = createAsyncThunk('/getuserpost', async () => {
     const token = Cookies.get('token')
     try {
-        const response = axios.get('http://localhost:3000/post/getPostById', {
-            headers: { Authorization: `Bearer ${token}` }
-        })
+        const response = axios.get('http://localhost:3000/post/getPostById',
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            })
         return response
     } catch (error) {
         throw error
