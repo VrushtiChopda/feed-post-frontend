@@ -1,0 +1,53 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 13rem;
+}
+
+.form-design {
+    max-width: 400px;
+    width: 100%;
+    background-image: url('../assets/login.jpg');
+    background-size: cover;
+    padding: 5rem;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.form-design::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+}
+
+.form-group,
+h1,
+.btn,
+input,
+.link {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* .main-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 13rem;
+}
+
+.login-btn {
+    left: 30%;
+}
+
+.form-design {
+    background-image: url('../assets/login.jpg');
+} */
