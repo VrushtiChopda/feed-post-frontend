@@ -117,10 +117,16 @@ const PostDetail = () => {
         }
     }
 
-    const handleAddReply = async (commentId) => {
+    const handleAddReply = async (commentId, postId) => {
         // console.log(parentCommentId, "reply")
-        const res = await dispatch(addReply(reply))
-        console.log(res.data, "res in handleAddReply")
+        console.log(reply, "reply")
+        console.log(commentId, "commentId")
+        const userId = authorizedUser._id
+        const postsId = postId._id
+        console.log(userId, "authorizedUser._id")
+        console.log(postsId, "postId")
+        const res = await dispatch(addReply({ userId, postsId, commentId, reply }))
+        console.log(res, "res in handleAddReply")
         handleGetReply(commentId)
     }
 
@@ -248,7 +254,7 @@ const PostDetail = () => {
                                                 <div>
                                                     <button
                                                         className='btn btn-outline-primary me-2'
-                                                        onClick={() => handleAddReply(comment._id)}
+                                                        onClick={() => handleAddReply(comment._id, comment.postId)}
                                                     >Add</button>
                                                 </div>
                                             </div>

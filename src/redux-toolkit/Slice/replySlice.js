@@ -7,11 +7,14 @@ const initialState = {
     loading: false
 }
 
-export const addReply = createAsyncThunk('/addReply', async (reply) => {
+export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, commentId, reply }) => {
     const paylaod = {
+        parentId: commentId,
+        userId: userId,
+        postId: postsId,
         commentReply: reply
     }
-    console.log(reply, "reply in slice")
+    console.log(paylaod, " ----- add reply payload -----")
     const res = axios.post('http://localhost:3000/reply/createReply', paylaod)
     console.log(res.data, "response in slice")
     return res.data
@@ -22,8 +25,8 @@ export const getReply = createAsyncThunk('/getReply', async (commentId) => {
         parentId: commentId
     }
     const res = axios.get('http://localhost:3000/reply/getReply', payload)
-    console.log(res.data, "response in get reply")
-    return res.data
+    console.log(res, "response in get reply")
+    return res
 })
 
 const replySlice = createSlice({
