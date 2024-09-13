@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import Cookies from 'js-cookie'
 const initialState = {
     reply: [],
     error: false,
@@ -15,18 +15,41 @@ export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, 
         commentReply: reply
     }
     console.log(paylaod, " ----- add reply payload -----")
-    const res = axios.post('http://localhost:3000/reply/createReply', paylaod)
-    console.log(res.data, "response in slice")
-    return res.data
+    const res = await axios.post('http://localhost:3000/reply/createReply', paylaod)
+    console.log(res.data.data, "response in slice")
+    return res.data.data
 })
 
 export const getReply = createAsyncThunk('/getReply', async (commentId) => {
-    const payload = {
-        parentId: commentId
-    }
-    const res = axios.get('http://localhost:3000/reply/getReply', payload)
+    const res = await axios.get(`http://localhost:3000/reply/getReply/${commentId}`)
     console.log(res, "response in get reply")
-    return res
+    return res.data
+})
+
+export const updateReply = createAsyncThunk('updateReply', async (data) => {
+    console.log(data.id, "replyId in slice")
+    console.log(data.text, "reply data in slice")
+    const token = Cookies.get('token')
+    const res = await axios.put(`http://localhost:3000/reply/updateReply/${data.id}`, {
+        commentReply: data.text
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    console.log(res, "response in update Slice")
+    return res.data
+})
+
+export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
+    const token = Cookies.get('token')
+    const res = await axios.delete(`http://localhost:3000/reply/deleteReply/${replyId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    console.log(res, "res in delete Reply")
+    return res.data
 })
 
 const replySlice = createSlice({
@@ -40,7 +63,7 @@ const replySlice = createSlice({
                 state.error = false
             })
             .addCase(addReply.fulfilled, (state, action) => {
-                state.reply = action.payload.data
+                state.reply = action.payload
                 state.loading = false
             })
             .addCase(addReply.rejected, (state, action) => {
@@ -56,6 +79,18 @@ const replySlice = createSlice({
                 state.reply = action.payload.data
             })
             .addCase(getReply.rejected, (state, action) => {
+                state.error = action.error.message
+                state.loading = false
+            })
+            .addCase(deleteReply.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(deleteReply.fulfilled, (state, action) => {
+                state.loading = false
+                state.reply = action.payload.data
+            })
+            .addCase(deleteReply.rejected, (state, action) => {
                 state.error = action.error.message
                 state.loading = false
             })

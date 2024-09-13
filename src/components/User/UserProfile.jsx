@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import user from '../../assets/user1.jpg'
 import Cookies from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
-import { getUserByIdService } from '../../services/services'
+
 import './User.css'
 const UserProfile = () => {
     const [profile, setProfile] = useState(null)
@@ -14,15 +14,15 @@ const UserProfile = () => {
         // console.log(userdata._id, "userId")
 
         const profileData = async () => {
-            const profileDetail = await getUserByIdService(userdata._id)
+            // const profileDetail = await getUserByIdService(userdata._id)
             // console.log(profileDetail.data, "--------user Data-----")
-            setProfile(profileDetail.data.data)
+            // setProfile(profileDetail.data.data)
         }
         profileData()
     }, [])
 
     return (
-        <>
+        <>      
             {/* <div className="container-fluid">
                 <div className="row">
                     <div classNameName="m-3 col-lg-3 border border-1 rounded-5 shadow ">

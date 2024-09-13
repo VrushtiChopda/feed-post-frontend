@@ -18,7 +18,6 @@ export const userRegister = createAsyncThunk('/register', async (userData) => {
 })
 
 export const userLogin = createAsyncThunk('/login', async (userData) => {
-    // const token = loginDetail.payload.data
     try {
         const data = await axios.post('http://localhost:3000/user/login', userData)
         console.log(data.data)

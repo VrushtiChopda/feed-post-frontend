@@ -12,7 +12,7 @@ import { addComment, deleteComment, editComment, getComment } from '../../redux-
 import user from '../../assets/user.png'
 import { jwtDecode } from 'jwt-decode'
 import Cookies from 'js-cookie'
-import { addReply, getReply } from '../../redux-toolkit/Slice/replySlice'
+import { addReply, deleteReply, getReply, updateReply } from '../../redux-toolkit/Slice/replySlice'
 
 const PostDetail = () => {
     const location = useLocation()
@@ -29,6 +29,8 @@ const PostDetail = () => {
 
     const [reply, setReply] = useState(null)
     const [replyData, setReplyData] = useState([])
+    const [editReplyId, setEditReplyId] = useState(null)
+    const [editedReply, setEditedReply] = useState([])
     const token = Cookies.get('token')
     const authorizedUser = jwtDecode(token)
 
@@ -86,13 +88,19 @@ const PostDetail = () => {
 
     const handleGetComment = async () => {
         try {
-            const res = await dispatch(getComment(post._id))
-            console.log(res, "handleGetComment")
-            setCommentById(res.payload.data.data)
+            const res = await dispatch(getComment(post._id));
+            if (res.meta.requestStatus === 'fulfilled') {
+                const comments = res.payload.data.data;
+                setCommentById(comments);
+
+                comments.forEach((comment) => {
+                    handleGetReply(comment._id);
+                });
+            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const handleEditComment = (commentId, comment) => {
         setEditingCommentId(commentId);
@@ -118,25 +126,60 @@ const PostDetail = () => {
     }
 
     const handleAddReply = async (commentId, postId) => {
-        // console.log(parentCommentId, "reply")
-        console.log(reply, "reply")
-        console.log(commentId, "commentId")
         const userId = authorizedUser._id
         const postsId = postId._id
-        console.log(userId, "authorizedUser._id")
-        console.log(postsId, "postId")
         const res = await dispatch(addReply({ userId, postsId, commentId, reply }))
         console.log(res, "res in handleAddReply")
-        handleGetReply(commentId)
+        if (res.meta.requestStatus === 'fulfilled') {
+            setReply(' ')
+            handleGetReply(commentId)
+        }
     }
 
-    const handleGetReply = async () => {
-        console.log(comment, "comment")
-        const res = await dispatch(getReply(comment._id))
-        console.log(res.data, "res in handleGetReply")
-        setReplyData(res.data)
-        console.log(replyData, "replyData")
+    const handleGetReply = async (commentId) => {
+        console.log(commentId, "------commentID in handleGetReply-------")
+        try {
+            const res = await dispatch(getReply(commentId));
+            console.log(res, "=======res in handleGetReply=========")
+            if (res.meta.requestStatus === 'fulfilled') {
+                setReplyData((prevReplyData) => ({
+                    ...prevReplyData,
+                    [commentId]: res.payload.data,
+                }));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleEditReply = async (replyId, replyData) => {
+        setEditReplyId(replyId)
+        setEditedReply(replyData)
+
     }
+
+    const handleUpdateReply = async (commentId, replyId) => {
+        console.log(commentId, "------ commentId -----")
+        console.log(replyId, "------ replyId ------")
+        console.log(editedReply, "editedreply")
+        const data = { id: replyId, text: editedReply }
+        const res = await dispatch(updateReply(data))
+        console.log(res, "response in handleUpdateReply")
+        if (res.meta.requestStatus === 'fulfilled') {
+            setEditedReply('')
+            setEditReplyId(null)
+            handleGetReply(commentId)
+        }
+    }
+
+    const handleDeleteReply = async (replyId, commentId) => {
+        const res = await dispatch(deleteReply(replyId))
+        console.log(res, "response in handleDeleteReply")
+        if (res.meta.requestStatus === 'fulfilled') {
+            handleGetReply(commentId)
+        }
+    }
+
     useEffect(() => {
         handleGetComment()
     }, [])
@@ -227,7 +270,7 @@ const PostDetail = () => {
                                         </div>
 
                                         {
-                                            authorizedUser && authorizedUser._id === comment.userId._id && (
+                                            authorizedUser && authorizedUser._id === reply?.userId?._id && (
                                                 <div className='d-flex justify-content-end mt-2'>
                                                     <LiaEdit
                                                         className='mx-2'
@@ -258,32 +301,50 @@ const PostDetail = () => {
                                                     >Add</button>
                                                 </div>
                                             </div>
-                                            {/* <div className='d-flex'>
-                                                <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
-                                                <div className='px-2'>
-                                                    <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
-
-                                                    {/* {
-                                                        editingCommentId === comment._id ? (
-                                                            <div className='d-flex'>
-                                                                <Input
-                                                                    value={editedComment}
-                                                                    onChange={(e) => setEditedComment(e.target.value)}
-                                                                    className='me-3'
+                                            {replyData[comment._id] && replyData[comment._id]?.map((reply) => (
+                                                <div key={reply._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                                                    <div className='d-flex'>
+                                                        <img src={user} style={{ width: '30px', maxHeight: '30px' }} alt='User' />
+                                                        <div className='px-2'>
+                                                            <h6 className='m-0 p-0'>{reply.userId.fullName}</h6>
+                                                            {
+                                                                editReplyId === reply._id ? (
+                                                                    <div className='d-flex'>
+                                                                        <Input
+                                                                            value={editedReply}
+                                                                            onChange={(e) => setEditedReply(e.target.value)}
+                                                                            className='me-3'
+                                                                        />
+                                                                        <button
+                                                                            className='btn btn-sm btn-outline-primary'
+                                                                            onClick={() => handleUpdateReply(comment._id, reply._id)}
+                                                                        >Update</button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <p className='m-0 p-0'>{reply.commentReply}</p>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    {
+                                                        authorizedUser && authorizedUser._id === reply.userId._id && (
+                                                            <div className='d-flex justify-content-end mt-2'>
+                                                                <LiaEdit
+                                                                    className='mx-2'
+                                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                                                    onClick={() => handleEditReply(reply._id, reply.commentReply)}
                                                                 />
-                                                                <button
-                                                                    className='btn btn-sm btn-outline-primary'
-                                                                    onClick={() => handleUpdatedComment(comment._id)}
-                                                                >Update</button>
+                                                                <MdOutlineDelete
+                                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                                                    onClick={() => handleDeleteReply(reply._id, comment._id)}
+                                                                />
                                                             </div>
-                                                        ) : ( */}
-                                            {/* <p className='m-0 p-0'>{replyData}</p> */}
-                                            {/* )
-                                                    } */}
-                                            {/* </div>
-                                    </div> */}
-
+                                                        )
+                                                    }
+                                                </div>
+                                            ))}
                                         </div>
+
                                     </div>
                                 </div>
                             ))}
