@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import user from '../../assets/user1.jpg'
-import Cookies from 'js-cookie'
-import { jwtDecode } from 'jwt-decode'
-
 import './User.css'
+import { useDispatch } from 'react-redux'
+import { userProfile } from '../../redux-toolkit/Slice/userSlice'
+
 const UserProfile = () => {
     const [profile, setProfile] = useState(null)
-
+    const dispatch = useDispatch()
     useEffect(() => {
-        const token = Cookies.get('token')
-        // console.log(token)
-        const userdata = jwtDecode(token)
-        // console.log(userdata._id, "userId")
-
         const profileData = async () => {
-            // const profileDetail = await getUserByIdService(userdata._id)
-            // console.log(profileDetail.data, "--------user Data-----")
-            // setProfile(profileDetail.data.data)
+            const profileDetail = await dispatch(userProfile())
+            console.log(profileDetail.payload.data.data, "--------user Data-----")
+            setProfile(profileDetail.payload.data.data)
         }
         profileData()
     }, [])
 
     return (
-        <>      
+        <>
             {/* <div className="container-fluid">
                 <div className="row">
                     <div classNameName="m-3 col-lg-3 border border-1 rounded-5 shadow ">
@@ -50,7 +45,7 @@ const UserProfile = () => {
                             <div className="d-flex flex-row justify-content-between align-items-center p-5 bg-dark text-white">
                                 <h3 className="display-5">{profile?.fullName}</h3></div>
                             <div className="p-3 bg-black text-white">
-                                <h6>{profile?.email}</h6>
+                                <h5>{profile?.email}</h5>
                             </div>
                             <div className="d-flex flex-row text-white">
                                 <div className="p-4 bg-primary text-center skill-block">

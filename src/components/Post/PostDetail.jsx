@@ -10,9 +10,8 @@ import * as Yup from 'yup'
 import { TextareaAutosize, Input } from '@mui/material'
 import { addComment, deleteComment, editComment, getComment } from '../../redux-toolkit/Slice/commentSlice'
 import user from '../../assets/user.png'
-import { jwtDecode } from 'jwt-decode'
-import Cookies from 'js-cookie'
 import { addReply, deleteReply, getReply, updateReply } from '../../redux-toolkit/Slice/replySlice'
+import { userProfile } from '../../redux-toolkit/Slice/userSlice'
 
 const PostDetail = () => {
     const location = useLocation()
@@ -31,8 +30,7 @@ const PostDetail = () => {
     const [replyData, setReplyData] = useState([])
     const [editReplyId, setEditReplyId] = useState(null)
     const [editedReply, setEditedReply] = useState([])
-    const token = Cookies.get('token')
-    const authorizedUser = jwtDecode(token)
+    const [authUser, setAuthUser] = useState(null)
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
@@ -46,6 +44,16 @@ const PostDetail = () => {
         postTitle: Yup.string().required("Post title is required"),
         description: Yup.string().required("Description is required")
     })
+
+    const authUserData = async () => {
+        try {
+            const user = await dispatch(userProfile())
+            console.log(user.payload.data.data)
+            setAuthUser(user.payload.data.data)
+        } catch (error) {
+            throw error
+        }
+    }
 
     const handleDeletePost = async (postId) => {
         try {
@@ -126,7 +134,7 @@ const PostDetail = () => {
     }
 
     const handleAddReply = async (commentId, postId) => {
-        const userId = authorizedUser._id
+        const userId = authUser._id
         const postsId = postId._id
         const res = await dispatch(addReply({ userId, postsId, commentId, reply }))
         console.log(res, "res in handleAddReply")
@@ -182,6 +190,7 @@ const PostDetail = () => {
 
     useEffect(() => {
         handleGetComment()
+        authUserData()
     }, [])
 
     return (
@@ -192,7 +201,7 @@ const PostDetail = () => {
                         <div className="border border-1 rounded-3 m-3 shadow ">
                             <h3 className='text-center'>{post.postTitle}</h3>
                             <h5 className='text-center'>{post.description}</h5>
-                            {authorizedUser && authorizedUser._id === post.userId && (
+                            {authUser && authUser._id === post.userId && (
                                 <>
                                     <hr />
                                     <div className='text-center justify-content-center'>
@@ -209,7 +218,7 @@ const PostDetail = () => {
                                     </div>
                                 </>
                             )}
-                            {/* {authorizedUser && authorizedUser._id === post.userId && (
+                            {/* {authUser && authUser._id === post.userId && (
                                 <>
                                     <hr />
                                     <div className='text-center justify-content-center'>
@@ -270,7 +279,7 @@ const PostDetail = () => {
                                         </div>
 
                                         {
-                                            authorizedUser && authorizedUser._id === reply?.userId?._id && (
+                                            authUser && authUser._id === comment?.userId?._id && (
                                                 <div className='d-flex justify-content-end mt-2'>
                                                     <LiaEdit
                                                         className='mx-2'
@@ -327,7 +336,7 @@ const PostDetail = () => {
                                                         </div>
                                                     </div>
                                                     {
-                                                        authorizedUser && authorizedUser._id === reply.userId._id && (
+                                                        authUser && authUser._id === reply.userId._id && (
                                                             <div className='d-flex justify-content-end mt-2'>
                                                                 <LiaEdit
                                                                     className='mx-2'
@@ -424,7 +433,7 @@ export default PostDetail
 //     const [editedComment, setEditedComment] = useState(''); // To store the edited comment text
 
 //     const token = Cookies.get('token')
-//     const authorizedUser = jwtDecode(token)
+//     const authUser = jwtDecode(token)
 
 //     const handleClose = () => setShow(false);
 //     const handleShow = () => setShow(true);
@@ -509,7 +518,7 @@ export default PostDetail
 //             <div className="col-lg-3 border border-1 rounded-3 m-3 shadow">
 //                 <h3 className='text-center'>{post.postTitle}</h3>
 //                 <h5 className='text-center'>{post.description}</h5>
-//                 {authorizedUser && authorizedUser._id === post.userId && (
+//                 {authUser && authUser._id === post.userId && (
 //                     <>
 //                         <hr />
 //                         <div className='text-center justify-content-center'>
@@ -661,8 +670,8 @@ export default PostDetail
 //     };
 
 //     const token = Cookies.get('token')
-//     const authorizedUser = jwtDecode(token)
-//     console.log(authorizedUser, "authorized User")
+//     const authUser = jwtDecode(token)
+//     console.log(authUser, "authorized User")
 //     // model
 //     const handleClose = () => {
 //         setShow(false)
@@ -753,7 +762,7 @@ export default PostDetail
 //                 <h3 className='text-center'>{post.postTitle}</h3>
 //                 <h5 className='text-center'>{post.description}</h5>
 //                 {
-//                     authorizedUser && authorizedUser._id === post.userId ? (
+//                     authUser && authUser._id === post.userId ? (
 //                         <>
 //                             <hr />
 //                             <div className='text-center justify-content-center'>

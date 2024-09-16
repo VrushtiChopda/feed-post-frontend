@@ -33,6 +33,20 @@ export const userLogin = createAsyncThunk('/login', async (userData) => {
     }
 })
 
+export const userProfile = createAsyncThunk('/profile', async () => {
+    const token = Cookies.get('token')
+    try {
+        const data = await axios.get(`http://localhost:3000/user/getuser`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        )
+        console.log(data, "data in userProfile")
+        return data
+    }
+    catch (error) {
+        throw error
+    }
+})
+
 const userSlice = createSlice({
     name: 'user',
     initialState: initialState,
@@ -60,6 +74,18 @@ const userSlice = createSlice({
                 state.user = action.payload.data
             })
             .addCase(userLogin.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.error.message
+            })
+            .addCase(userProfile.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(userProfile.fulfilled, (state, action) => {
+                state.loading = false
+                state.user = action.payload.data
+            })
+            .addCase(userProfile.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.error.message
             })

@@ -1,11 +1,13 @@
 import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { addPost, updatePost } from '../../redux-toolkit/Slice/postSlice';
 
 const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, getAllPost }) => {
+    const [image, setImage] = useState(null)
+
     const dispatch = useDispatch();
 
     const handleClose = () => {
@@ -20,22 +22,25 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
     };
 
     const schemaValidation = Yup.object({
+
         postTitle: Yup.string().required('Post title is required'),
         description: Yup.string().required('Description is required')
     });
 
     const handleSubmit = async (postData, { resetForm }) => {
         try {
-            const formData = {
-                postTitle: postData.postTitle,
-                description: postData.description
-            };
-
+            const formData = new FormData()
+            formData.append('postTitle', postData.postTitle)
+            formData.append('description', postData.description)
+            if (image) {
+                formData.append('postImage', image);
+            }
             if (edit) {
                 const res = await dispatch(updatePost({ postId: premiumPostId, postData: formData }));
                 if (res.meta.requestStatus === 'fulfilled') {
                     getAllPost();
                     resetForm();
+                    setImage(null)
                     handleClose();
                 }
             } else {
@@ -43,6 +48,7 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
                 if (res.meta.requestStatus === 'fulfilled') {
                     getAllPost();
                     resetForm();
+                    setImage(null);
                     handleClose();
                 }
             }
@@ -64,6 +70,16 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
                 >
                     {(formik) => (
                         <FormikForm>
+                            <Form.Group className="mb-3">
+                                <label htmlFor="postTitle">Upload Image</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    onChange={(e) => setImage(e.target.files[0])}
+                                />
+                                {image && <div>Selected file: {image.name}</div>}
+                                <ErrorMessage name="postTitle" component="div" className="text-danger" />
+                            </Form.Group>
                             <Form.Group className="mb-3">
                                 <label htmlFor="postTitle">Enter Post Title</label>
                                 <Field

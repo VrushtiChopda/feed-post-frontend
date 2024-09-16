@@ -9,6 +9,7 @@ import UserPost from './components/Post/UserPost';
 import Post from './components/Post/Post';
 import Dashboard from './components/sidebar/Dashboard';
 import PostDetail from './components/Post/PostDetail';
+import UserPostDetails from './components/Post/UserPostDetails';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path='profile' element={<UserProfile />} />
           </Route>
           <Route path='/postdetail' element={<PostDetail />} />
+          <Route path='/userpostdetail' element={<UserPostDetails />} />
         </Routes>
       </Router>
     </>

@@ -12,7 +12,6 @@ const Post = () => {
     const [edit, setEdit] = useState(false);
     const [updateValue, setUpdateValue] = useState(null);
     const [premiumPostId, setPostId] = useState(null);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const posts = useSelector((state) => state.post.post);
@@ -41,7 +40,7 @@ const Post = () => {
         }
     };
 
-    //------ edit post -------
+    // //------ edit post -------
     const handleEditPost = (postId, postDetail) => {
         setPostId(postId);
         setEdit(true);
@@ -65,6 +64,7 @@ const Post = () => {
                     {postDetail && postDetail.map((post) => (
                         <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
                             <div className="border border-1 rounded-3 m-3 shadow" onClick={() => handleClick(post)}>
+                                <img src={post.postImage} alt='post image' />
                                 <h3 className="text-center">{post.postTitle}</h3>
                                 <h5 className="text-center">{post.description}</h5>
                                 {/* <div className="text-center">
