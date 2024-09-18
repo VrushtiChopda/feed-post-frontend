@@ -22,7 +22,6 @@ export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, 
 
 export const getReply = createAsyncThunk('/getReply', async (commentId) => {
     const res = await axios.get(`http://localhost:3000/reply/getReply/${commentId}`)
-    console.log(res, "response in get reply")
     return res.data
 })
 

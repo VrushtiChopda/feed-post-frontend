@@ -37,6 +37,23 @@ input,
     z-index: 2;
 }
 
+@media screen and (max-width : 992px) {
+    .main-container {
+        margin-top: 10rem;
+    }
+}
+
+@media screen and (max-width : 768px) {
+    .main-container {
+        margin-top: 6rem;
+    }
+}
+
+@media screen and (max-width : 576px) {
+    .main-container {
+        margin-top: 3rem;
+    }
+}
 
 /* .main-container {
     display: flex;

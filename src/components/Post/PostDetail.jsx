@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { deletePost, updatePost } from '../../redux-toolkit/Slice/postSlice'
 import { Button, Modal } from 'react-bootstrap'
-import { Form, ErrorMessage, Field, Formik } from 'formik'
+import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 import { TextareaAutosize, Input } from '@mui/material'
 import { addComment, deleteComment, editComment, getComment } from '../../redux-toolkit/Slice/commentSlice'
@@ -20,7 +20,7 @@ const PostDetail = () => {
 
     const [show, setShow] = useState(false)
     const [post, setPost] = useState(location.state.postdata)
-    const [postId, setPostId] = useState(null)
+
     const [comment, setComment] = useState('')
     const [commentById, setCommentById] = useState([])
     const [editingCommentId, setEditingCommentId] = useState(null)
@@ -30,14 +30,16 @@ const PostDetail = () => {
     const [replyData, setReplyData] = useState([])
     const [editReplyId, setEditReplyId] = useState(null)
     const [editedReply, setEditedReply] = useState([])
-    const [authUser, setAuthUser] = useState(null)
 
+    const [authUser, setAuthUser] = useState(null)
+    const [image, setImage] = useState(null)
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
     const initialValues = {
         postTitle: post.postTitle,
-        description: post.description
+        description: post.description,
+        postImage: post.postImage
     }
 
     const schemaValidation = Yup.object({
@@ -68,13 +70,21 @@ const PostDetail = () => {
 
     const handleSubmit = async (postData) => {
         try {
-            const formData = {
-                postTitle: postData.postTitle,
-                description: postData.description
+            const formData = new FormData()
+            if (image) {
+                formData.append('postImage', image);
             }
+            formData.append('postTitle', postData.postTitle)
+            formData.append('description', postData.description)
+
             const res = await dispatch(updatePost({ postId: post._id, postData: formData }));
             if (res.meta.requestStatus === "fulfilled") {
-                setPost(formData)
+                setPost({
+                    ...post,
+                    postTitle: postData.postTitle,
+                    description: postData.description,
+                    postImage: postData.postImage || post.postImage
+                })
                 handleClose()
             }
         } catch (error) {
@@ -84,6 +94,7 @@ const PostDetail = () => {
 
     const handleAddComment = async () => {
         try {
+            console.log(comment, "comment while add comment")
             const res = await dispatch(addComment({ postId: post._id, comment }))
             if (res.meta.requestStatus === 'fulfilled') {
                 setComment('')
@@ -145,10 +156,8 @@ const PostDetail = () => {
     }
 
     const handleGetReply = async (commentId) => {
-        console.log(commentId, "------commentID in handleGetReply-------")
         try {
             const res = await dispatch(getReply(commentId));
-            console.log(res, "=======res in handleGetReply=========")
             if (res.meta.requestStatus === 'fulfilled') {
                 setReplyData((prevReplyData) => ({
                     ...prevReplyData,
@@ -199,6 +208,11 @@ const PostDetail = () => {
                 <div className='row'>
                     <div className='col-lg-6 col-md-6 col-sm-12'>
                         <div className="border border-1 rounded-3 m-3 shadow ">
+                            {
+                                post?.postImage && (
+                                    <img src={`http://localhost:3000/${post.postImage}`} alt='post image' />
+                                )
+                            }
                             <h3 className='text-center'>{post.postTitle}</h3>
                             <h5 className='text-center'>{post.description}</h5>
                             {authUser && authUser._id === post.userId && (
@@ -206,12 +220,12 @@ const PostDetail = () => {
                                     <hr />
                                     <div className='text-center justify-content-center'>
                                         <LiaEdit
-                                            className='me-5 mb-2'
+                                            className='me-5 mb-2 text-primary'
                                             style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                             onClick={handleShow}
                                         />
                                         <MdOutlineDelete
-                                            className='me-5 mb-2'
+                                            className='me-5 mb-2 text-danger'
                                             style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                             onClick={() => handleDeletePost(post._id)}
                                         />
@@ -272,7 +286,7 @@ const PostDetail = () => {
                                                             >Update</button>
                                                         </div>
                                                     ) : (
-                                                        <p className='m-0 p-0'>{comment.comment}</p>
+                                                        <p className='text-break text-break m-0 p-0'>{comment.comment}</p>
                                                     )
                                                 }
                                             </div>
@@ -282,11 +296,12 @@ const PostDetail = () => {
                                             authUser && authUser._id === comment?.userId?._id && (
                                                 <div className='d-flex justify-content-end mt-2'>
                                                     <LiaEdit
-                                                        className='mx-2'
+                                                        className='mx-2 text-primary'
                                                         style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                         onClick={() => handleEditComment(comment._id, comment.comment)}
                                                     />
                                                     <MdOutlineDelete
+                                                        className='text-danger'
                                                         style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                         onClick={() => handleDeleteComment(comment._id)}
                                                     />
@@ -330,7 +345,7 @@ const PostDetail = () => {
                                                                         >Update</button>
                                                                     </div>
                                                                 ) : (
-                                                                    <p className='m-0 p-0'>{reply.commentReply}</p>
+                                                                    <p className='text-break m-0 p-0'>{reply.commentReply}</p>
                                                                 )
                                                             }
                                                         </div>
@@ -339,11 +354,12 @@ const PostDetail = () => {
                                                         authUser && authUser._id === reply.userId._id && (
                                                             <div className='d-flex justify-content-end mt-2'>
                                                                 <LiaEdit
-                                                                    className='mx-2'
+                                                                    className='mx-2 text-primary'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                                     onClick={() => handleEditReply(reply._id, reply.commentReply)}
                                                                 />
                                                                 <MdOutlineDelete
+                                                                    className='text-danger'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                                     onClick={() => handleDeleteReply(reply._id, comment._id)}
                                                                 />
@@ -370,8 +386,20 @@ const PostDetail = () => {
                                 validationSchema={schemaValidation}
                                 onSubmit={handleSubmit}
                             >
-                                {(formik) => (
-                                    <Form>
+                                {({ setFieldValue }) => (
+                                    <FormikForm>
+                                        <label htmlFor="postImage">Upload Image</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            id="postImage"
+                                            name='postImage'
+                                            onChange={(e) => {
+                                                setFieldValue("postImage", e.target.files[0])
+                                                setImage(e.target.files[0])
+                                            }}
+                                        />
+
                                         <label htmlFor="postTitle">Enter Post Title</label>
                                         <Field
                                             className='form-control'
@@ -379,6 +407,7 @@ const PostDetail = () => {
                                             name='postTitle'
                                         />
                                         <ErrorMessage name='postTitle' component="div" className="text-danger" />
+
                                         <label htmlFor="description">Enter Post Description</label>
                                         <Field
                                             className='form-control'
@@ -386,11 +415,10 @@ const PostDetail = () => {
                                             name='description'
                                         />
                                         <ErrorMessage name='description' component="div" className="text-danger" />
-
                                         <Button variant="primary" type='submit' className="mt-3">
                                             Update
                                         </Button>
-                                    </Form>
+                                    </FormikForm>
                                 )}
                             </Formik>
                         </Modal.Body>

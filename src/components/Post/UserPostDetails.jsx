@@ -105,7 +105,7 @@ const UserPostDetails = () => {
             navigate('/dashboard/userpost')
         }
     }
-    
+
     //---------- get comment ---------------
     const handleGetComment = async (postId) => {
         const res = await dispatch(getComment(postId))
@@ -228,24 +228,25 @@ const UserPostDetails = () => {
         <>
             <h1 className='text-center'>My post</h1>
             <div className="container">
-                {/* <div className='mt-3'>
-                    <button className='btn btn-outline-dark' onClick={handleShow} > + ADD POST</button>
-                </div> */}
-                {/* {posts && posts.map((post) => ( */}
                 <div className="row">
                     <div key={posts._id} className='col-lg-6 col-md-6 col-sm-12'>
                         <div className="border border-1 rounded-3 m-3 shadow">
+                            {
+                                posts?.postImage && (
+                                    <img src={`http://localhost:3000/${posts.postImage}`} alt='post image' />
+                                )
+                            }
                             <h3 className='text-center'>{posts?.postTitle}</h3>
                             <h5 className='text-center'>{posts?.description}</h5>
                             <hr />
                             <div className='text-center'>
                                 <LiaEdit
-                                    className='me-5 mb-2'
+                                    className='me-5 mb-2 text-primary'
                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                     onClick={() => handleEditPost(posts._id, posts)}
                                 />
                                 <MdOutlineDelete
-                                    className='me-5 mb-2'
+                                    className='me-5 mb-2 text-danger'
                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                     onClick={() => handleDeletePost(posts._id)}
                                 />
@@ -289,7 +290,7 @@ const UserPostDetails = () => {
                                                             >Update</button>
                                                         </div>
                                                     ) : (
-                                                        <p className='m-0 p-0'>{comment.comment}</p>
+                                                        <p className='text-break m-0 p-0'>{comment.comment}</p>
                                                     )
                                                 }
                                             </div>
@@ -299,7 +300,7 @@ const UserPostDetails = () => {
                                                 authUser && authUser._id === comment.userId._id && (
 
                                                     <LiaEdit
-                                                        className='mx-2'
+                                                        className='mx-2 text-primary'
                                                         style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                         onClick={() => handleEditComment(comment._id, comment.comment)}
                                                     />
@@ -307,6 +308,7 @@ const UserPostDetails = () => {
                                                 )
                                             }
                                             < MdOutlineDelete
+                                                className='text-danger'
                                                 style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                 onClick={() => { handleDeleteComment(comment._id, posts._id) }}
                                             />
@@ -349,7 +351,7 @@ const UserPostDetails = () => {
                                                                         >Update</button>
                                                                     </div>
                                                                 ) : (
-                                                                    <p className='m-0 p-0'>{reply.commentReply}</p>
+                                                                    <p className='text-break m-0 p-0'>{reply.commentReply}</p>
                                                                 )
                                                             }
                                                         </div>
@@ -358,11 +360,12 @@ const UserPostDetails = () => {
                                                         authUser && authUser._id === reply.userId._id && (
                                                             <div className='d-flex justify-content-end mt-2'>
                                                                 <LiaEdit
-                                                                    className='mx-2'
+                                                                    className='mx-2 text-primary'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                                     onClick={() => handleEditReply(reply._id, reply.commentReply)}
                                                                 />
                                                                 <MdOutlineDelete
+                                                                    className='text-danger'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
                                                                     onClick={() => handleDeleteReply(reply._id, comment._id)}
                                                                 />

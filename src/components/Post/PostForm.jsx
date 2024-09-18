@@ -1,6 +1,6 @@
 import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik';
 import React, { useState } from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { addPost, updatePost } from '../../redux-toolkit/Slice/postSlice';
@@ -28,29 +28,28 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
     });
 
     const handleSubmit = async (postData, { resetForm }) => {
+        console.log(postData, "----- postData ----------")
+        console.log(image, "--------- image ---------")
         try {
             const formData = new FormData()
-            formData.append('postTitle', postData.postTitle)
-            formData.append('description', postData.description)
             if (image) {
                 formData.append('postImage', image);
             }
+            formData.append('postTitle', postData.postTitle)
+            formData.append('description', postData.description)
+            console.log(formData, "--------- formData ----------")
+
+            let res;
             if (edit) {
-                const res = await dispatch(updatePost({ postId: premiumPostId, postData: formData }));
-                if (res.meta.requestStatus === 'fulfilled') {
-                    getAllPost();
-                    resetForm();
-                    setImage(null)
-                    handleClose();
-                }
+                res = await dispatch(updatePost({ postId: premiumPostId, postData: formData }));
             } else {
-                const res = await dispatch(addPost(formData));
-                if (res.meta.requestStatus === 'fulfilled') {
-                    getAllPost();
-                    resetForm();
-                    setImage(null);
-                    handleClose();
-                }
+                res = await dispatch(addPost({ postData: formData }));
+            }
+            if (res.meta.requestStatus === 'fulfilled') {
+                getAllPost();
+                resetForm();
+                setImage(null);
+                handleClose();
             }
         } catch (error) {
             console.error(error);
@@ -69,36 +68,31 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
                     onSubmit={handleSubmit}
                 >
                     {(formik) => (
-                        <FormikForm>
-                            <Form.Group className="mb-3">
-                                <label htmlFor="postTitle">Upload Image</label>
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    onChange={(e) => setImage(e.target.files[0])}
-                                />
-                                {image && <div>Selected file: {image.name}</div>}
-                                <ErrorMessage name="postTitle" component="div" className="text-danger" />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <label htmlFor="postTitle">Enter Post Title</label>
-                                <Field
-                                    className="form-control"
-                                    id="postTitle"
-                                    name="postTitle"
-                                />
-                                <ErrorMessage name="postTitle" component="div" className="text-danger" />
-                            </Form.Group>
+                        <FormikForm encType="multipart/form-data">
 
-                            <Form.Group className="mb-3">
-                                <label htmlFor="description">Enter Post Description</label>
-                                <Field
-                                    className="form-control"
-                                    id="description"
-                                    name="description"
-                                />
-                                <ErrorMessage name="description" component="div" className="text-danger" />
-                            </Form.Group>
+                            <label htmlFor="postImage">Upload Image</label>
+                            <input
+                                type="file"
+                                className="form-control"
+                                id="postImage"
+                                onChange={(e) => setImage(e.target.files[0])}
+                            />
+
+                            <label htmlFor="postTitle">Enter Post Title</label>
+                            <Field
+                                className="form-control"
+                                id="postTitle"
+                                name="postTitle"
+                            />
+                            <ErrorMessage name="postTitle" component="div" className="text-danger" />
+
+                            <label htmlFor="description">Enter Post Description</label>
+                            <Field
+                                className="form-control"
+                                id="description"
+                                name="description"
+                            />
+                            <ErrorMessage name="description" component="div" className="text-danger" />
 
                             <Button variant="primary" type="submit" className="mt-3">
                                 {edit ? 'Update' : 'Add'}

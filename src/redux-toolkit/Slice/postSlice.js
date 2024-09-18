@@ -7,7 +7,8 @@ const initialState = {
     post: []
 }
 
-export const addPost = createAsyncThunk('/addPost', async (postData) => {
+export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
+    console.log(postData, "--------- postData in slice --------------")
     const token = Cookies.get('token')
     try {
         const data = await axios.post('http://localhost:3000/post/addPost', postData,
@@ -17,6 +18,7 @@ export const addPost = createAsyncThunk('/addPost', async (postData) => {
                 }
             }
         )
+        console.log(data, " -------- data -----------")
         return data.data
     } catch (error) {
         console.log(error)

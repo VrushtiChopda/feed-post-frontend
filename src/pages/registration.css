@@ -36,3 +36,21 @@ input,
     position: relative;
     z-index: 2;
 }
+
+@media screen and (max-width : 992px) {
+    .reg-container {
+        margin-top: 10rem;
+    }
+}
+
+@media screen and (max-width : 768px) {
+    .reg-container {
+        margin-top: 6rem;
+    }
+}
+
+@media screen and (max-width : 576px) {
+    .reg-container {
+        margin-top: 3rem;
+    }
+}
