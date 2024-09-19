@@ -12,7 +12,7 @@ import { Input, TextareaAutosize } from '@mui/material';
 import * as Yup from 'yup'
 import user from '../../assets/user.png'
 import { Button, Modal } from 'react-bootstrap';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik'
 
 const UserPostDetails = () => {
     const dispatch = useDispatch()
@@ -34,11 +34,14 @@ const UserPostDetails = () => {
     const [editReplyId, setEditReplyId] = useState(null)
     const [editedReply, setEditedReply] = useState([])
     const [authUser, setAuthUser] = useState(null)
+    const [image, setImage] = useState(null)
 
     const handleClose = () => setShow(false)
     const handleShow = () => {
         setShow(true)
     }
+    const postModifiedImagePath = posts.postImage.replace(/\\/g, '/');
+    console.log(postModifiedImagePath, "<----------modified Path ---------------->")
 
     const initialValues = {
         postTitle: posts.postTitle,
@@ -84,14 +87,22 @@ const UserPostDetails = () => {
 
     const handleSubmit = async (postData) => {
         try {
-            const formData = {
-                postTitle: postData.postTitle,
-                description: postData.description
+            const formData = new FormData()
+            if (image) {
+                formData.append('postImage', image);
             }
+            formData.append('postTitle', postData.postTitle)
+            formData.append('description', postData.description)
             const res = await dispatch(updatePost({ postId: posts._id, postData: formData }));
             if (res.meta.requestStatus === "fulfilled") {
-                setPosts(formData)
+                setPosts({
+                    ...posts,
+                    postTitle: postData.postTitle,
+                    description: postData.description,
+                    postImage: postData.postImage
+                })
                 handleClose()
+                navigate('/dashboard/userpost')
             }
         } catch (error) {
             console.log(error)
@@ -550,8 +561,28 @@ const UserPostDetails = () => {
                         validationSchema={schemaValidation}
                         onSubmit={handleSubmit}
                     >
-                        {(formik) => (
-                            <Form>
+                        {({ setFieldValue }) => (
+                            <FormikForm>
+                                {postModifiedImagePath && (
+                                    <div className="mb-3">
+                                        <img
+                                            src={`http://localhost:3000/${postModifiedImagePath}`}
+                                            alt="Current Post"
+                                            style={{ width: '100%', height: 'auto' }}
+                                        />
+                                    </div>
+                                )}
+                                <label htmlFor="postImage">Upload Image</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    id="postImage"
+                                    name='postImage'
+                                    onChange={(e) => {
+                                        setFieldValue("postImage", e.target.files[0])
+                                        setImage(e.target.files[0])
+                                    }}
+                                />
                                 <label htmlFor="postTitle">Enter Post Title</label>
                                 <Field
                                     className='form-control'
@@ -570,7 +601,7 @@ const UserPostDetails = () => {
                                 <Button variant="primary" type='submit' className="mt-3">
                                     Update
                                 </Button>
-                            </Form>
+                            </FormikForm>
                         )}
                     </Formik>
                 </Modal.Body>

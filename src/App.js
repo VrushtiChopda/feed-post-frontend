@@ -23,9 +23,9 @@ function App() {
             <Route path='userpost' element={<UserPost />} />
             <Route path='posts' element={<Post />} />
             <Route path='profile' element={<UserProfile />} />
+            <Route path='postdetail' element={<PostDetail />} />
+            <Route path='userpostdetail' element={<UserPostDetails />} />
           </Route>
-          <Route path='/postdetail' element={<PostDetail />} />
-          <Route path='/userpostdetail' element={<UserPostDetails />} />
         </Routes>
       </Router>
     </>

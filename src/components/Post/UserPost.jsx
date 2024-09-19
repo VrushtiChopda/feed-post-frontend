@@ -27,7 +27,7 @@ const UserPost = () => {
 
     // Navigate to post detail page
     const handleClick = (post) => {
-        navigate('/userpostdetail', { state: { postData: post } });
+        navigate('/dashboard/userpostdetail', { state: { postData: post } });
     };
 
     return (
@@ -41,7 +41,7 @@ const UserPost = () => {
                     {posts && posts.map((post) => (
                         <div className='col-lg-4 col-md-6 col-sm-12' onClick={() => handleClick(post)}>
                             <div className="border border-1 rounded-3 m-3 shadow">
-                            {
+                                {
                                     post?.postImage && (
                                         <img src={`http://localhost:3000/${post.postImage}`} alt='post image' style={{ height: '230px' }} />
                                     )

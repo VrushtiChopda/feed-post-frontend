@@ -30,7 +30,7 @@ const Post = () => {
     //------ Navigate to post detail page -------
     const handleClick = (post) => {
         console.log(post, " --------- post ------------")
-        navigate('/postdetail', { state: { postdata: post } });
+        navigate('/dashboard/postdetail', { state: { postdata: post } });
     };
     return (
         <>
@@ -45,7 +45,7 @@ const Post = () => {
                             <div className="border border-1 rounded-3 m-3 shadow" onClick={() => handleClick(post)}>
                                 {
                                     post?.postImage && (
-                                        <img src={`http://localhost:3000/${post.postImage}`} alt='post image' style={{ height: '230px' }} />
+                                        <img src={`http://localhost:3000/${post.postImage}`} className='object-fit-cover' alt='post image' style={{ height: '230px' }} />
                                     )
                                 }
                                 <h3 className="text-center">{post.postTitle}</h3>

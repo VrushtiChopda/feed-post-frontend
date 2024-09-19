@@ -12,6 +12,7 @@ import { addComment, deleteComment, editComment, getComment } from '../../redux-
 import user from '../../assets/user.png'
 import { addReply, deleteReply, getReply, updateReply } from '../../redux-toolkit/Slice/replySlice'
 import { userProfile } from '../../redux-toolkit/Slice/userSlice'
+import { toast, ToastContainer } from 'react-toastify'
 
 const PostDetail = () => {
     const location = useLocation()
@@ -36,10 +37,13 @@ const PostDetail = () => {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    const postModifiedImagePath = post.postImage.replace(/\\/g, '/');
+    console.log(postModifiedImagePath, "<----------modified Path ---------------->")
+
     const initialValues = {
         postTitle: post.postTitle,
         description: post.description,
-        postImage: post.postImage
+        postImage: postModifiedImagePath
     }
 
     const schemaValidation = Yup.object({
@@ -63,20 +67,29 @@ const PostDetail = () => {
             if (res.meta.requestStatus === 'fulfilled') {
                 navigate('/dashboard/posts')
             }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.error.message)
+            }
         } catch (error) {
             console.log(error)
         }
     }
 
     const handleSubmit = async (postData) => {
+        console.log(postData, "postData in handleSubmit")
+        console.log(post.postImage, "===============", postData.postImage)
         try {
             const formData = new FormData()
+
             if (image) {
                 formData.append('postImage', image);
+
+            } else {
+                formData.append('postImage', post.postImage)
             }
             formData.append('postTitle', postData.postTitle)
             formData.append('description', postData.description)
-
+            console.log(formData, "--------- form data -------------")
             const res = await dispatch(updatePost({ postId: post._id, postData: formData }));
             if (res.meta.requestStatus === "fulfilled") {
                 setPost({
@@ -86,6 +99,7 @@ const PostDetail = () => {
                     postImage: postData.postImage || post.postImage
                 })
                 handleClose()
+                navigate('/dashboard/posts')
             }
         } catch (error) {
             console.log(error)
@@ -210,7 +224,7 @@ const PostDetail = () => {
                         <div className="border border-1 rounded-3 m-3 shadow ">
                             {
                                 post?.postImage && (
-                                    <img src={`http://localhost:3000/${post.postImage}`} alt='post image' />
+                                    <img src={`http://localhost:3000/${postModifiedImagePath}`} className='object-fit-cover' alt='post image' />
                                 )
                             }
                             <h3 className='text-center'>{post.postTitle}</h3>
@@ -265,8 +279,8 @@ const PostDetail = () => {
                                 </div>
                             </div>
                             {commentById.map((comment) => (
-                                <div>
-                                    <div key={comment._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                                <div key={comment._id}>
+                                    <div className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
                                         <div className='d-flex'>
                                             <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
                                             <div className='px-2'>
@@ -388,6 +402,15 @@ const PostDetail = () => {
                             >
                                 {({ setFieldValue }) => (
                                     <FormikForm>
+                                        {postModifiedImagePath && (
+                                            <div className="mb-3">
+                                                <img
+                                                    src={`http://localhost:3000/${postModifiedImagePath}`}
+                                                    alt="Current Post"
+                                                    style={{ width: '100%', height: 'auto' }}
+                                                />
+                                            </div>
+                                        )}
                                         <label htmlFor="postImage">Upload Image</label>
                                         <input
                                             type="file"
@@ -399,7 +422,7 @@ const PostDetail = () => {
                                                 setImage(e.target.files[0])
                                             }}
                                         />
-
+                                        {/* {postModifiedImagePath && <p>Current Image: {postModifiedImagePath}</p>} */}
                                         <label htmlFor="postTitle">Enter Post Title</label>
                                         <Field
                                             className='form-control'
@@ -423,6 +446,19 @@ const PostDetail = () => {
                             </Formik>
                         </Modal.Body>
                     </Modal>
+
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme='dark'
+                    />
                 </div >
             </div >
         </>

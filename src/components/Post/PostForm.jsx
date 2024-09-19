@@ -67,7 +67,7 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
                     validationSchema={schemaValidation}
                     onSubmit={handleSubmit}
                 >
-                    {(formik) => (
+                    {({ setFieldValue }) => (
                         <FormikForm encType="multipart/form-data">
 
                             <label htmlFor="postImage">Upload Image</label>
@@ -75,7 +75,10 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
                                 type="file"
                                 className="form-control"
                                 id="postImage"
-                                onChange={(e) => setImage(e.target.files[0])}
+                                onChange={(e) => {
+                                    setFieldValue("postImage", e.target.files[0])
+                                    setImage(e.target.files[0])
+                                }}
                             />
 
                             <label htmlFor="postTitle">Enter Post Title</label>
