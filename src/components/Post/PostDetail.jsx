@@ -37,8 +37,8 @@ const PostDetail = () => {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    const BASE_URL = process.env.REACT_APP_BASE_URL
     const postModifiedImagePath = post.postImage.replace(/\\/g, '/');
-    console.log(postModifiedImagePath, "<----------modified Path ---------------->")
 
     const initialValues = {
         postTitle: post.postTitle,
@@ -125,7 +125,7 @@ const PostDetail = () => {
             if (res.meta.requestStatus === 'fulfilled') {
                 const comments = res.payload.data.data;
                 setCommentById(comments);
-
+                console.log(commentById, "------------=comment=-----------")
                 comments.forEach((comment) => {
                     handleGetReply(comment._id);
                 });
@@ -224,7 +224,7 @@ const PostDetail = () => {
                         <div className="border border-1 rounded-3 m-3 shadow ">
                             {
                                 post?.postImage && (
-                                    <img src={`http://localhost:3000/${postModifiedImagePath}`} className='object-fit-cover' alt='post image' />
+                                    <img src={`${BASE_URL}/${postModifiedImagePath}`} className='object-fit-cover' alt='post image' />
                                 )
                             }
                             <h3 className='text-center'>{post.postTitle}</h3>
@@ -284,7 +284,7 @@ const PostDetail = () => {
                                         <div className='d-flex'>
                                             <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
                                             <div className='px-2'>
-                                                <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
+                                                <h6 className='m-0 p-0'>{comment.userId?.fullName}</h6>
 
                                                 {
                                                     editingCommentId === comment._id ? (
@@ -405,7 +405,7 @@ const PostDetail = () => {
                                         {postModifiedImagePath && (
                                             <div className="mb-3">
                                                 <img
-                                                    src={`http://localhost:3000/${postModifiedImagePath}`}
+                                                    src={`${BASE_URL}/${postModifiedImagePath}`}
                                                     alt="Current Post"
                                                     style={{ width: '100%', height: 'auto' }}
                                                 />

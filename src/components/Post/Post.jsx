@@ -14,7 +14,7 @@ const Post = () => {
     const dispatch = useDispatch();
 
     const handleShow = () => setShow(true);
-
+    const BASE_URL = process.env.REACT_APP_BASE_URL
     useEffect(() => {
         getAllPost();
     }, []);
@@ -45,7 +45,7 @@ const Post = () => {
                             <div className="border border-1 rounded-3 m-3 shadow" onClick={() => handleClick(post)}>
                                 {
                                     post?.postImage && (
-                                        <img src={`http://localhost:3000/${post.postImage}`} className='object-fit-cover' alt='post image' style={{ height: '230px' }} />
+                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover' alt='post image' style={{ height: '230px' }} />
                                     )
                                 }
                                 <h3 className="text-center">{post.postTitle}</h3>

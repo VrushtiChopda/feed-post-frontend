@@ -36,12 +36,12 @@ const UserPostDetails = () => {
     const [authUser, setAuthUser] = useState(null)
     const [image, setImage] = useState(null)
 
+    const BASE_URL = process.env.REACT_APP_BASE_URL
     const handleClose = () => setShow(false)
     const handleShow = () => {
         setShow(true)
     }
     const postModifiedImagePath = posts.postImage.replace(/\\/g, '/');
-    console.log(postModifiedImagePath, "<----------modified Path ---------------->")
 
     const initialValues = {
         postTitle: posts.postTitle,
@@ -111,7 +111,7 @@ const UserPostDetails = () => {
     //---------- delete post --------------
     const handleDeletePost = async (postId) => {
         const res = await dispatch(deletePost(postId))
-        console.log(res, "----- handleDeletePost response --------")
+        // console.log(res, "----- handleDeletePost response --------")
         if (res.meta.requestStatus === 'fulfilled') {
             navigate('/dashboard/userpost')
         }
@@ -169,12 +169,12 @@ const UserPostDetails = () => {
             setEditingCommentId(null);
             setEditedComment('')
         }
-        console.log(res, 'response in handle updated comment');
+        // console.log(res, 'response in handle updated comment');
     };
     // --------- delete comment---------------
     const handleDeleteComment = async (commentId, postId) => {
         const res = await dispatch(deleteCommentByAuthorizedUser(commentId))
-        console.log(res, "res of handleDeleteComment")
+        // console.log(res, "res of handleDeleteComment")
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetComment(postId)
         }
@@ -185,17 +185,17 @@ const UserPostDetails = () => {
         const userId = authUser._id
         const postsId = postId._id
         const res = await dispatch(addReply({ userId, postsId, commentId, reply }))
-        console.log(res, "res in handleAddReply")
+        // console.log(res, "res in handleAddReply")
         if (res.meta.requestStatus === 'fulfilled') {
             setReply('')
             handleGetReply(commentId)
         }
     }
     const handleGetReply = async (commentId) => {
-        console.log(commentId, "------commentID in handleGetReply-------")
+        // console.log(commentId, "------commentID in handleGetReply-------")
         try {
             const res = await dispatch(getReply(commentId));
-            console.log(res, "=======res in handleGetReply=========")
+            // console.log(res, "=======res in handleGetReply=========")
             if (res.meta.requestStatus === 'fulfilled') {
                 setReplyData((prevReplyData) => ({
                     ...prevReplyData,
@@ -215,12 +215,12 @@ const UserPostDetails = () => {
     }
 
     const handleUpdateReply = async (commentId, replyId) => {
-        console.log(commentId, "------ commentId -----")
-        console.log(replyId, "------ replyId ------")
-        console.log(editedReply, "editedreply")
+        // console.log(commentId, "------ commentId -----")
+        // console.log(replyId, "------ replyId ------")
+        // console.log(editedReply, "editedreply")
         const data = { id: replyId, text: editedReply }
         const res = await dispatch(updateReply(data))
-        console.log(res, "response in handleUpdateReply")
+        // console.log(res, "response in handleUpdateReply")
         if (res.meta.requestStatus === 'fulfilled') {
             setEditedReply('')
             setEditReplyId(null)
@@ -230,7 +230,7 @@ const UserPostDetails = () => {
 
     const handleDeleteReply = async (replyId, commentId) => {
         const res = await dispatch(deleteReply(replyId))
-        console.log(res, "response in handleDeleteReply")
+        // console.log(res, "response in handleDeleteReply")
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetReply(commentId)
         }
@@ -244,7 +244,7 @@ const UserPostDetails = () => {
                         <div className="border border-1 rounded-3 m-3 shadow">
                             {
                                 posts?.postImage && (
-                                    <img src={`http://localhost:3000/${posts.postImage}`} alt='post image' />
+                                    <img src={`${BASE_URL}/${posts.postImage}`} alt='post image' />
                                 )
                             }
                             <h3 className='text-center'>{posts?.postTitle}</h3>
@@ -566,7 +566,7 @@ const UserPostDetails = () => {
                                 {postModifiedImagePath && (
                                     <div className="mb-3">
                                         <img
-                                            src={`http://localhost:3000/${postModifiedImagePath}`}
+                                            src={`${BASE_URL}/${postModifiedImagePath}`}
                                             alt="Current Post"
                                             style={{ width: '100%', height: 'auto' }}
                                         />

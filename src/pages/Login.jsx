@@ -20,6 +20,7 @@ const Login = () => {
     const handleLoginSubmit = async (data) => {
         try {
             const loginDetail = await dispatch(userLogin(data))
+            console.log(data, "--------- data-------------")
             if (loginDetail.meta.requestStatus === 'fulfilled') {
                 toast.success("Login sucessfully", {
                     onClose: () => {

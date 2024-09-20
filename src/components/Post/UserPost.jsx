@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getPostByUserId } from '../../redux-toolkit/Slice/userPostSlice';
 import { useNavigate } from 'react-router-dom';
-import { LiaEdit } from 'react-icons/lia';
-import { MdOutlineDelete } from 'react-icons/md';
 import PostForm from './PostForm';
 
 const UserPost = () => {
@@ -15,6 +13,7 @@ const UserPost = () => {
     const [show, setShow] = useState(false);
     const [premiumPostId, setPostId] = useState(null);
 
+    const BASE_URL = process.env.REACT_APP_BASE_URL
     useEffect(() => {
         getAllPosts();
     }, []);
@@ -43,7 +42,7 @@ const UserPost = () => {
                             <div className="border border-1 rounded-3 m-3 shadow">
                                 {
                                     post?.postImage && (
-                                        <img src={`http://localhost:3000/${post.postImage}`} alt='post image' style={{ height: '230px' }} />
+                                        <img src={`${BASE_URL}/${post.postImage}`} alt='post image' style={{ height: '230px' }} />
                                     )
                                 }
                                 <h3 className='text-center'>{post.postTitle}</h3>

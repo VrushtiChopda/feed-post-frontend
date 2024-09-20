@@ -14,7 +14,6 @@ import UserPostDetails from './components/Post/UserPostDetails';
 function App() {
   return (
     <>
-
       <Router>
         <Routes >
           <Route path='/' element={<Login />} />

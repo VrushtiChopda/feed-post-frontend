@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 const token = Cookies.get('token')
 
+const BASE_URL = process.env.REACT_APP_BASE_URL
 const initialState = {
     comment: [],
     loading: false,
@@ -11,7 +12,7 @@ const initialState = {
 
 export const addComment = createAsyncThunk('/addcomment', async ({ postId, comment }) => {
     try {
-        const res = await axios.post('http://localhost:3000/comment/addComment', { postId, comment },
+        const res = await axios.post(`${BASE_URL}/comment/addComment`, { postId, comment },
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -26,7 +27,7 @@ export const addComment = createAsyncThunk('/addcomment', async ({ postId, comme
 
 export const getComment = createAsyncThunk('/getcomment', async (postId) => {
     try {
-        const res = await axios.get(`http://localhost:3000/comment/getCommentById/${postId}`, {
+        const res = await axios.get(`${BASE_URL}/comment/getCommentById/${postId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
         return res
@@ -38,7 +39,7 @@ export const getComment = createAsyncThunk('/getcomment', async (postId) => {
 export const editComment = createAsyncThunk('/updatecomment', async ({ commentId, comment }) => {
     const token = Cookies.get('token')
     try {
-        const res = await axios.put(`http://localhost:3000/comment/updateComment/${commentId}`, { comment },
+        const res = await axios.put(`${BASE_URL}/comment/updateComment/${commentId}`, { comment },
             {
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -52,7 +53,7 @@ export const editComment = createAsyncThunk('/updatecomment', async ({ commentId
 export const deleteComment = createAsyncThunk('/deleteComment', async (commentId) => {
     const token = Cookies.get('token')
     try {
-        const res = await axios.delete(`http://localhost:3000/comment/deleteComment/${commentId}`, {
+        const res = await axios.delete(`${BASE_URL}/comment/deleteComment/${commentId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
 
@@ -66,7 +67,7 @@ export const deleteComment = createAsyncThunk('/deleteComment', async (commentId
 export const deleteCommentByAuthorizedUser = createAsyncThunk('/deleteCommentByUSer', async (commentId) => {
     const token = Cookies.get('token')
     try {
-        const res = await axios.delete(`http://localhost:3000/comment/deleteCommentByUser/${commentId}`, {
+        const res = await axios.delete(`${BASE_URL}/comment/deleteCommentByUser/${commentId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
 

@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie'
+
+const BASE_URL = process.env.REACT_APP_BASE_URL
+
 const initialState = {
     loading: false,
     error: false,
@@ -11,7 +14,7 @@ export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
     console.log(postData, "--------- postData in slice --------------")
     const token = Cookies.get('token')
     try {
-        const data = await axios.post('http://localhost:3000/post/addPost', postData,
+        const data = await axios.post(`${BASE_URL}/post/addPost`, postData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -28,7 +31,8 @@ export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
 
 export const getPost = createAsyncThunk('/getPost', async () => {
     try {
-        const data = await axios.get('http://localhost:3000/post/getpost')
+        const data = await axios.get(`${BASE_URL}/post/getpost`)
+        console.log(data, "---------- data ---------")
         return data.data
     } catch (error) {
         console.log(error)
@@ -40,7 +44,7 @@ export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postD
     const token = Cookies.get('token')
     // console.log(token, "token")
     try {
-        const data = await axios.put(`http://localhost:3000/post/updatePost/${postId}`, postData,
+        const data = await axios.put(`${BASE_URL}/post/updatePost/${postId}`, postData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -56,7 +60,7 @@ export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postD
 export const deletePost = createAsyncThunk('/deletePost', async (postId) => {
     const token = Cookies.get('token')
     try {
-        const data = await axios.delete(`http://localhost:3000/post/deletePost/${postId}`,
+        const data = await axios.delete(`${BASE_URL}/post/deletePost/${postId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`

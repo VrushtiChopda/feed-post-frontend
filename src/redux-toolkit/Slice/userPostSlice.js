@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie'
 
+const BASE_URL = process.env.REACT_APP_BASE_URL
+
 const initialState = {
     userpost: [],
     error: false,
@@ -11,7 +13,7 @@ const initialState = {
 export const getPostByUserId = createAsyncThunk('/getuserpost', async () => {
     const token = Cookies.get('token')
     try {
-        const response = axios.get('http://localhost:3000/post/getPostById',
+        const response = axios.get(`${BASE_URL}/post/getPostById`,
             {
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -24,7 +26,7 @@ export const getPostByUserId = createAsyncThunk('/getuserpost', async () => {
 // export const updatePost = createAsyncThunk('/updatePost', async (postId, postData) => {
 //     const token = Cookies.get('token')
 //     try {
-//         const response = axios.put(`http://localhost:3000/post/updatePost/${postId}`, postData,
+//         const response = axios.put(`${BASE_URL}/post/updatePost/${postId}`, postData,
 //             {
 //                 headers: { Authorization: `Bearer ${token}` }
 //             })

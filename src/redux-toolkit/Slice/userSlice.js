@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie';
+
+const BASE_URL = process.env.REACT_APP_BASE_URL
+
 const initialState = {
     user: [],
     loading: false,
@@ -9,7 +12,7 @@ const initialState = {
 
 export const userRegister = createAsyncThunk('/register', async (userData) => {
     try {
-        const registerData = await axios.post('http://localhost:3000/user/register', userData)
+        const registerData = await axios.post(`${BASE_URL}/user/register`, userData)
         console.log(registerData.data, "----------- register data ----------------")
         return registerData.data
     } catch (error) {
@@ -18,9 +21,10 @@ export const userRegister = createAsyncThunk('/register', async (userData) => {
 })
 
 export const userLogin = createAsyncThunk('/login', async (userData) => {
+    console.log(userData, "------- userData -------- ")
     try {
-        const data = await axios.post('http://localhost:3000/user/login', userData)
-        console.log(data.data)
+        const data = await axios.post(`${BASE_URL}/user/login`, userData)
+        console.log(data.data, "data after api response")
         const token = data.data.data
         if (token) {
             Cookies.set('token', token)
@@ -36,10 +40,10 @@ export const userLogin = createAsyncThunk('/login', async (userData) => {
 export const userProfile = createAsyncThunk('/profile', async () => {
     const token = Cookies.get('token')
     try {
-        const data = await axios.get(`http://localhost:3000/user/getuser`,
+        const data = await axios.get(`${BASE_URL}/user/getuser`,
             { headers: { Authorization: `Bearer ${token}` } }
         )
-        console.log(data, "data in userProfile")
+        // console.log(data, "data in userProfile")
         return data
     }
     catch (error) {

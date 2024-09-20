@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie'
+
+const BASE_URL = process.env.REACT_APP_BASE_URL
+
 const initialState = {
     reply: [],
     error: false,
@@ -15,13 +18,13 @@ export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, 
         commentReply: reply
     }
     console.log(paylaod, " ----- add reply payload -----")
-    const res = await axios.post('http://localhost:3000/reply/createReply', paylaod)
+    const res = await axios.post(`${BASE_URL}/reply/createReply`, paylaod)
     console.log(res.data.data, "response in slice")
     return res.data.data
 })
 
 export const getReply = createAsyncThunk('/getReply', async (commentId) => {
-    const res = await axios.get(`http://localhost:3000/reply/getReply/${commentId}`)
+    const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`)
     return res.data
 })
 
@@ -29,7 +32,7 @@ export const updateReply = createAsyncThunk('updateReply', async (data) => {
     console.log(data.id, "replyId in slice")
     console.log(data.text, "reply data in slice")
     const token = Cookies.get('token')
-    const res = await axios.put(`http://localhost:3000/reply/updateReply/${data.id}`, {
+    const res = await axios.put(`${BASE_URL}/reply/updateReply/${data.id}`, {
         commentReply: data.text
     }, {
         headers: {
@@ -42,7 +45,7 @@ export const updateReply = createAsyncThunk('updateReply', async (data) => {
 
 export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
     const token = Cookies.get('token')
-    const res = await axios.delete(`http://localhost:3000/reply/deleteReply/${replyId}`, {
+    const res = await axios.delete(`${BASE_URL}/reply/deleteReply/${replyId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
