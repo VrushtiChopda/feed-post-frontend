@@ -29,7 +29,7 @@ const UserPostDetails = () => {
     const [editingCommentId, setEditingCommentId] = useState(null)
     const [editedComment, setEditedComment] = useState('')
 
-    const [reply, setReply] = useState(null)
+    const [replies, setReplies] = useState({})
     const [replyData, setReplyData] = useState([])
     const [editReplyId, setEditReplyId] = useState(null)
     const [editedReply, setEditedReply] = useState([])
@@ -38,9 +38,9 @@ const UserPostDetails = () => {
 
     const BASE_URL = process.env.REACT_APP_BASE_URL
     const handleClose = () => setShow(false)
-    const handleShow = () => {
-        setShow(true)
-    }
+    // const handleShow = () => {
+    //     setShow(true)
+    // }
     const postModifiedImagePath = posts.postImage.replace(/\\/g, '/');
 
     const initialValues = {
@@ -62,7 +62,7 @@ const UserPostDetails = () => {
     const authUserData = async () => {
         try {
             const user = await dispatch(userProfile())
-            console.log(user.payload.data.data)
+            // console.log(user.payload.data.data)
             setAuthUser(user.payload.data.data)
         } catch (error) {
             throw error
@@ -180,17 +180,29 @@ const UserPostDetails = () => {
         }
     }
 
-
+    //------------- add reply ----------------
+    const handleReplyChange = (commentId, value) => {
+        setReplies(prevReplies => ({
+            ...prevReplies,
+            [commentId]: value
+        }))
+    }
     const handleAddReply = async (commentId, postId) => {
         const userId = authUser._id
         const postsId = postId._id
-        const res = await dispatch(addReply({ userId, postsId, commentId, reply }))
+        const replyText = replies[commentId]
+        const res = await dispatch(addReply({ userId, postsId, commentId, replyText }))
         // console.log(res, "res in handleAddReply")
         if (res.meta.requestStatus === 'fulfilled') {
-            setReply('')
+            setReplies(prevReplies => ({
+                ...prevReplies,
+                [commentId]: ''
+            }))
             handleGetReply(commentId)
         }
     }
+
+    //------------- get reply ------------------
     const handleGetReply = async (commentId) => {
         // console.log(commentId, "------commentID in handleGetReply-------")
         try {
@@ -207,7 +219,7 @@ const UserPostDetails = () => {
         }
     };
 
-
+    //------------- edit reply ---------------
     const handleEditReply = async (replyId, replyData) => {
         setEditReplyId(replyId)
         setEditedReply(replyData)
@@ -215,9 +227,6 @@ const UserPostDetails = () => {
     }
 
     const handleUpdateReply = async (commentId, replyId) => {
-        // console.log(commentId, "------ commentId -----")
-        // console.log(replyId, "------ replyId ------")
-        // console.log(editedReply, "editedreply")
         const data = { id: replyId, text: editedReply }
         const res = await dispatch(updateReply(data))
         // console.log(res, "response in handleUpdateReply")
@@ -228,6 +237,7 @@ const UserPostDetails = () => {
         }
     }
 
+    //------------ delete reply ----------------------
     const handleDeleteReply = async (replyId, commentId) => {
         const res = await dispatch(deleteReply(replyId))
         // console.log(res, "response in handleDeleteReply")
@@ -240,11 +250,11 @@ const UserPostDetails = () => {
             <h1 className='text-center'>My post</h1>
             <div className="container">
                 <div className="row">
-                    <div key={posts._id} className='col-lg-6 col-md-6 col-sm-12'>
-                        <div className="border border-1 rounded-3 m-3 shadow">
+                    <div key={posts._id} className='col-lg-6'>
+                        <div className=" border border-1 rounded-3 m-3 shadow">
                             {
                                 posts?.postImage && (
-                                    <img src={`${BASE_URL}/${posts.postImage}`} alt='post image' />
+                                    <img src={`${BASE_URL}/${posts.postImage}`} alt='post image' className='rounded-top-3' />
                                 )
                             }
                             <h3 className='text-center'>{posts?.postTitle}</h3>
@@ -332,8 +342,8 @@ const UserPostDetails = () => {
                                                 <TextareaAutosize
                                                     className='w-100 rounded p-1 mx-2'
                                                     placeholder="Add a reply"
-                                                    value={reply}
-                                                    onChange={(e) => setReply(e.target.value)}
+                                                    value={replies[comment._id] || ''}
+                                                    onChange={(e) => handleReplyChange(comment._id, e.target.value)}
                                                 />
                                                 <div>
                                                     <button
@@ -393,164 +403,7 @@ const UserPostDetails = () => {
                         </div>
                     </div>
                 </div>
-                {/* ))} */}
             </div>
-            {/* <div className="container">
-                <div className='mt-3'>
-                    <button className='btn btn-outline-dark' onClick={() => setShow(true)}> + ADD POST</button>
-                </div>
-                <div className="row">
-                    <div className="col-lg-6">
-                        <div className="border border-1 rounded-3 m-3 shadow">
-                            <h3 className='text-center'>{posts.postTitle}</h3>
-                            <h5 className='text-center'>{post.description}</h5>
-                            {authUser && authUser._id === post.userId && (
-                                <>
-                                    <hr />
-                                    <div className='text-center justify-content-center'>
-                                        <LiaEdit
-                                            className='me-5 mb-2'
-                                            style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                            onClick={handleShow}
-                                        />
-                                        <MdOutlineDelete
-                                            className='me-5 mb-2'
-                                            style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                            onClick={() => handleDeletePost(post._id)}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className='m-3'>
-                        <div className='d-flex'>
-                            <TextareaAutosize
-                                className='w-100 rounded p-1 mx-2'
-                                placeholder="Add a comment"
-                                value={comments[post._id] || ''}
-                                onChange={(e) => handleCommentChange(post._id, e.target.value)}
-                            />
-                            <div>
-                                <button
-                                    className='btn btn-outline-primary me-2'
-                                    onClick={() => handleAddComment(post._id)}
-                                >Add</button>
-                            </div>
-                        </div>
-                        {commentsByPostId[post._id]?.map((comment) => (
-                            <>
-                                <div key={comment._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
-                                    <div className='d-flex'>
-                                        <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
-                                        <div className='px-2'>
-                                            <h6 className='m-0 p-0'>{comment.userId.fullName}</h6>
-                                            {
-                                                editingCommentId === comment._id ? (
-                                                    <div className='d-flex'>
-                                                        <Input
-                                                            value={editedComment}
-                                                            onChange={(e) => setEditedComment(e.target.value)}
-                                                            className='me-3'
-                                                        />
-                                                        <button
-                                                            className='btn btn-sm btn-outline-primary'
-                                                            onClick={() => handleUpdatedComment(comment._id)}
-                                                        >Update</button>
-                                                    </div>
-                                                ) : (
-                                                    <p className='m-0 p-0'>{comment.comment}</p>
-                                                )
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className='d-flex justify-content-end mt-2'>
-                                        {
-                                            authUser && authUser._id === comment.userId._id && (
-
-                                                <LiaEdit
-                                                    className='mx-2'
-                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                    onClick={() => handleEditComment(comment._id, comment.comment)}
-                                                />
-
-                                            )
-                                        }
-                                        < MdOutlineDelete
-                                            style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                            onClick={() => { handleDeleteComment(comment._id, post._id) }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className='d-flex justify-content-end'>
-                                    <div className='w-75'>
-                                        <div className='d-flex'>
-                                            <TextareaAutosize
-                                                className='w-100 rounded p-1 mx-2'
-                                                placeholder="Add a reply"
-                                                value={reply}
-                                                onChange={(e) => setReply(e.target.value)}
-                                            />
-                                            <div>
-                                                <button
-                                                    className='btn btn-outline-primary me-2'
-                                                    onClick={() => handleAddReply(comment._id, comment.postId)}
-                                                >Add</button>
-                                            </div>
-                                        </div>
-                                        {replyData[comment._id] && replyData[comment._id]?.map((reply) => (
-                                            <div key={reply._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
-                                                <div className='d-flex'>
-                                                    <img src={user} style={{ width: '30px', maxHeight: '30px' }} alt='User' />
-                                                    <div className='px-2'>
-                                                        <h6 className='m-0 p-0'>{reply.userId.fullName}</h6>
-                                                        {
-                                                            editReplyId === reply._id ? (
-                                                                <div className='d-flex'>
-                                                                    <Input
-                                                                        value={editedReply}
-                                                                        onChange={(e) => setEditedReply(e.target.value)}
-                                                                        className='me-3'
-                                                                    />
-                                                                    <button
-                                                                        className='btn btn-sm btn-outline-primary'
-                                                                        onClick={() => handleUpdateReply(comment._id, reply._id)}
-                                                                    >Update</button>
-                                                                </div>
-                                                            ) : (
-                                                                <p className='m-0 p-0'>{reply.commentReply}</p>
-                                                            )
-                                                        }
-                                                    </div>
-                                                </div>
-                                                {
-                                                    authUser && authUser._id === reply.userId._id && (
-                                                        <div className='d-flex justify-content-end mt-2'>
-                                                            <LiaEdit
-                                                                className='mx-2'
-                                                                style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                onClick={() => handleEditReply(reply._id, reply.commentReply)}
-                                                            />
-                                                            <MdOutlineDelete
-                                                                style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                onClick={() => handleDeleteReply(reply._id, comment._id)}
-                                                            />
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                </div>
-                            </>
-                        ))}
-                    </div>
-                </div>
-            </div> */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Update post</Modal.Title>

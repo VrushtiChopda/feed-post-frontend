@@ -10,6 +10,7 @@ const initialState = {
     post: []
 }
 
+//---------------- add post ------------------------
 export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
     console.log(postData, "--------- postData in slice --------------")
     const token = Cookies.get('token')
@@ -29,6 +30,7 @@ export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
     }
 })
 
+//---------------- get post ------------------------
 export const getPost = createAsyncThunk('/getPost', async () => {
     try {
         const data = await axios.get(`${BASE_URL}/post/getpost`)
@@ -40,6 +42,7 @@ export const getPost = createAsyncThunk('/getPost', async () => {
     }
 })
 
+//---------------- update post ------------------------
 export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postData }) => {
     const token = Cookies.get('token')
     // console.log(token, "token")
@@ -57,6 +60,7 @@ export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postD
     }
 })
 
+//---------------- delete post ------------------------
 export const deletePost = createAsyncThunk('/deletePost', async (postId) => {
     const token = Cookies.get('token')
     try {

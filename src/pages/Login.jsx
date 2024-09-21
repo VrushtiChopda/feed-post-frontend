@@ -24,7 +24,7 @@ const Login = () => {
             if (loginDetail.meta.requestStatus === 'fulfilled') {
                 toast.success("Login sucessfully", {
                     onClose: () => {
-                        navigate('/dashboard')
+                        navigate('/dashboard/posts')
                     }
                 })
             }
@@ -89,53 +89,6 @@ const Login = () => {
                     theme='dark'
                 />
             </div>
-
-
-            {/* <div className='m-5'>
-                <Formik
-                    initialValues={{ email: "", password: "" }}
-                    validationSchema={schemaValidation}
-                    onSubmit={handleLoginSubmit}
-                > 
-                    {(formik) => (
-                        <div className='main-container '>
-                            <form onSubmit={formik.handleSubmit} className='form-design w-25 p-5 border rounded-4 shadow'>
-                                <h1 className='text-center mb-3'>Sign In</h1>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="email
-                                    ">Email address
-                                    </label>
-                                    <input type="email"
-                                        className="form-control"
-                                        id="email"
-                                        value={formik.values.email}
-                                        onChange={formik.handleChange}
-                                    />
-                                </div>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="password"
-                                    >Password</label>
-                                    <input type="password"
-                                        className="form-control"
-                                        id="password"
-                                        value={formik.values.password}
-                                        onChange={formik.handleChange}
-                                    />
-                                </div>
-                                <div className='d-flex justify-content-center mb-3'>
-                                    <button type="submit"
-                                        className="btn btn-outline-dark"
-                                    >Login</button >
-                                </div>
-                                <div className='text-center link'>
-                                    Not registerd yet? <Link to='/register' className='text-black text-decoration-underline'>Register Now</Link>
-                                </div>
-                            </form >
-                        </div >
-                    )}
-                </Formik >
-
-            </div > */}
         </>
     )
 }

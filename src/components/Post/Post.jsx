@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPost, deletePost } from '../../redux-toolkit/Slice/postSlice';
+import { useDispatch } from 'react-redux';
+import { getPost } from '../../redux-toolkit/Slice/postSlice';
 import { useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
 
@@ -10,11 +10,12 @@ const Post = () => {
     const [edit, setEdit] = useState(false);
     const [updateValue, setUpdateValue] = useState(null);
     const [premiumPostId, setPostId] = useState(null);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const handleShow = () => setShow(true);
     const BASE_URL = process.env.REACT_APP_BASE_URL
+
     useEffect(() => {
         getAllPost();
     }, []);
@@ -22,14 +23,14 @@ const Post = () => {
     //------ all posts ------
     const getAllPost = async () => {
         const postData = await dispatch(getPost());
-        console.log(postData.payload.data, "payload get all post")
+        // console.log(postData.payload.data, "payload get all post")
         setPostDetail(postData.payload.data);
         return postData.payload.data;
     };
 
     //------ Navigate to post detail page -------
     const handleClick = (post) => {
-        console.log(post, " --------- post ------------")
+        // console.log(post, " --------- post ------------")
         navigate('/dashboard/postdetail', { state: { postdata: post } });
     };
     return (
@@ -45,23 +46,11 @@ const Post = () => {
                             <div className="border border-1 rounded-3 m-3 shadow" onClick={() => handleClick(post)}>
                                 {
                                     post?.postImage && (
-                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover' alt='post image' style={{ height: '230px' }} />
+                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
                                     )
                                 }
                                 <h3 className="text-center">{post.postTitle}</h3>
                                 <h5 className="text-center">{post.description}</h5>
-                                {/* <div className="text-center">   
-                                    <LiaEdit
-                                        className="me-5 mb-2"
-                                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                        onClick={() => handleEditPost(post._id, post)}
-                                    />
-                                    <MdOutlineDelete
-                                        className="me-5 mb-2"
-                                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                        onClick={() => handleDeletePost(post._id)}
-                                    />
-                                </div> */}
                             </div>
                         </div>
                     ))}

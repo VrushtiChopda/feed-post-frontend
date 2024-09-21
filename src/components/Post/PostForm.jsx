@@ -22,14 +22,14 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
     };
 
     const schemaValidation = Yup.object({
-
         postTitle: Yup.string().required('Post title is required'),
         description: Yup.string().required('Description is required')
     });
 
+    //---------- add and update post ---------------------
     const handleSubmit = async (postData, { resetForm }) => {
-        console.log(postData, "----- postData ----------")
-        console.log(image, "--------- image ---------")
+        // console.log(postData, "----- postData ----------")
+        // console.log(image, "--------- image ---------")
         try {
             const formData = new FormData()
             if (image) {
@@ -37,7 +37,7 @@ const PostForm = ({ show, setShow, edit, updateValue, premiumPostId, setEdit, ge
             }
             formData.append('postTitle', postData.postTitle)
             formData.append('description', postData.description)
-            console.log(formData, "--------- formData ----------")
+            // console.log(formData, "--------- formData ----------")
 
             let res;
             if (edit) {

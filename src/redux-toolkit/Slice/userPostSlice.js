@@ -10,6 +10,7 @@ const initialState = {
     loading: false
 }
 
+//---------------- get all post of user ------------------------
 export const getPostByUserId = createAsyncThunk('/getuserpost', async () => {
     const token = Cookies.get('token')
     try {

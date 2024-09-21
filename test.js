@@ -490,3 +490,138 @@ const UserPost = () => {
 }
 
 export default UserPost
+
+
+
+
+
+
+
+
+
+
+
+const [reply, setReply] = useState({});
+
+const handleAddReply = async (commentId, postId) => {
+    const userId = authUser._id;
+    const postsId = postId._id;
+    const res = await dispatch(addReply({ userId, postsId, commentId, reply: reply[commentId] }));
+    console.log(res, "res in handleAddReply");
+    if (res.meta.requestStatus === 'fulfilled') {
+        setReply(prev => ({ ...prev, [commentId]: '' }));
+        handleGetReply(commentId);
+    }
+};
+
+const handleReplyChange = (e, commentId) => {
+    setReply(prev => ({ ...prev, [commentId]: e.target.value }));
+};
+
+{commentById.map((comment) => (
+    <div key={comment._id}>
+        <div className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+            <div className='d-flex'>
+                <img src={user} style={{ width: '40px', maxHeight: '40px' }} alt='User' />
+                <div className='px-2'>
+                    <h6 className='m-0 p-0'>{comment.userId?.fullName}</h6>
+
+                    {editingCommentId === comment._id ? (
+                        <div className='d-flex'>
+                            <Input
+                                value={editedComment}
+                                onChange={(e) => setEditedComment(e.target.value)}
+                                className='me-3'
+                            />
+                            <button
+                                className='btn btn-sm btn-outline-primary'
+                                onClick={() => handleUpdatedComment(comment._id)}
+                            >
+                                Update
+                            </button>
+                        </div>
+                    ) : (
+                        <p className='text-break text-break m-0 p-0'>{comment.comment}</p>
+                    )}
+                </div>
+            </div>
+
+            {authUser && authUser._id === comment?.userId?._id && (
+                <div className='d-flex justify-content-end mt-2'>
+                    <LiaEdit
+                        className='mx-2 text-primary'
+                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                        onClick={() => handleEditComment(comment._id, comment.comment)}
+                    />
+                    <MdOutlineDelete
+                        className='text-danger'
+                        style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                        onClick={() => handleDeleteComment(comment._id)}
+                    />
+                </div>
+            )}
+        </div>
+
+        <div className='d-flex justify-content-end'>
+            <div className='w-75'>
+                <div className='d-flex'>
+                    <TextareaAutosize
+                        className='w-100 rounded p-1 mx-2'
+                        placeholder="Add a reply"
+                        value={reply[comment._id] || ''}
+                        onChange={(e) => handleReplyChange(e, comment._id)}
+                    />
+                    <div>
+                        <button
+                            className='btn btn-outline-primary me-2'
+                            onClick={() => handleAddReply(comment._id, comment.postId)}
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+                {replyData[comment._id] && replyData[comment._id]?.map((reply) => (
+                    <div key={reply._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                        <div className='d-flex'>
+                            <img src={user} style={{ width: '30px', maxHeight: '30px' }} alt='User' />
+                            <div className='px-2'>
+                                <h6 className='m-0 p-0'>{reply.userId.fullName}</h6>
+                                {editReplyId === reply._id ? (
+                                    <div className='d-flex'>
+                                        <Input
+                                            value={editedReply}
+                                            onChange={(e) => setEditedReply(e.target.value)}
+                                            className='me-3'
+                                        />
+                                        <button
+                                            className='btn btn-sm btn-outline-primary'
+                                            onClick={() => handleUpdateReply(comment._id, reply._id)}
+                                        >
+                                            Update
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className='text-break m-0 p-0'>{reply.commentReply}</p>
+                                )}
+                            </div>
+                        </div>
+                        {authUser && authUser._id === reply.userId._id && (
+                            <div className='d-flex justify-content-end mt-2'>
+                                <LiaEdit
+                                    className='mx-2 text-primary'
+                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                    onClick={() => handleEditReply(reply._id, reply.commentReply)}
+                                />
+                                <MdOutlineDelete
+                                    className='text-danger'
+                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                    onClick={() => handleDeleteReply(reply._id, comment._id)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+))}

@@ -10,27 +10,30 @@ const initialState = {
     loading: false
 }
 
-export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, commentId, reply }) => {
+//---------------- add reply ------------------------
+export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, commentId, replyText }) => {
     const paylaod = {
         parentId: commentId,
         userId: userId,
         postId: postsId,
-        commentReply: reply
+        commentReply: replyText
     }
-    console.log(paylaod, " ----- add reply payload -----")
+    // console.log(paylaod, " ----- add reply payload -----")
     const res = await axios.post(`${BASE_URL}/reply/createReply`, paylaod)
-    console.log(res.data.data, "response in slice")
+    // console.log(res.data.data, "response in slice")
     return res.data.data
 })
 
+//---------------- get reply ------------------------
 export const getReply = createAsyncThunk('/getReply', async (commentId) => {
     const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`)
     return res.data
 })
 
+//---------------- update reply ------------------------
 export const updateReply = createAsyncThunk('updateReply', async (data) => {
-    console.log(data.id, "replyId in slice")
-    console.log(data.text, "reply data in slice")
+    // console.log(data.id, "replyId in slice")
+    // console.log(data.text, "reply data in slice")
     const token = Cookies.get('token')
     const res = await axios.put(`${BASE_URL}/reply/updateReply/${data.id}`, {
         commentReply: data.text
@@ -39,10 +42,11 @@ export const updateReply = createAsyncThunk('updateReply', async (data) => {
             Authorization: `Bearer ${token}`
         }
     })
-    console.log(res, "response in update Slice")
+    // console.log(res, "response in update Slice")
     return res.data
 })
 
+//---------------- delete reply ------------------------
 export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
     const token = Cookies.get('token')
     const res = await axios.delete(`${BASE_URL}/reply/deleteReply/${replyId}`, {
@@ -50,7 +54,7 @@ export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
             Authorization: `Bearer ${token}`
         }
     })
-    console.log(res, "res in delete Reply")
+    // console.log(res, "res in delete Reply")
     return res.data
 })
 

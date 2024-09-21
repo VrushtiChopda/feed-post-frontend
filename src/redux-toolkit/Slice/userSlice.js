@@ -10,6 +10,7 @@ const initialState = {
     error: false,
 }
 
+//---------------- register user ------------------
 export const userRegister = createAsyncThunk('/register', async (userData) => {
     try {
         const registerData = await axios.post(`${BASE_URL}/user/register`, userData)
@@ -20,6 +21,7 @@ export const userRegister = createAsyncThunk('/register', async (userData) => {
     }
 })
 
+//---------------- login user ---------------------
 export const userLogin = createAsyncThunk('/login', async (userData) => {
     console.log(userData, "------- userData -------- ")
     try {
@@ -37,6 +39,7 @@ export const userLogin = createAsyncThunk('/login', async (userData) => {
     }
 })
 
+//------------- user profile------------------------
 export const userProfile = createAsyncThunk('/profile', async () => {
     const token = Cookies.get('token')
     try {

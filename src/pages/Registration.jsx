@@ -16,6 +16,7 @@ const Registration = () => {
         email: string().email("enter valid email").required("email is required"),
         password: string().min(5, "enter minimum 5 characters").max(15, "enter maximum 15 characters").required("password is required")
     })
+
     const handleRegisterSubmit = async (data) => {
         try {
             console.log(data, "data in registration")
@@ -32,6 +33,7 @@ const Registration = () => {
             toast.error("registration failed")
         }
     }
+    
     return (
         <>
             <div className='reg-container'>

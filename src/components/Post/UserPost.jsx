@@ -42,7 +42,7 @@ const UserPost = () => {
                             <div className="border border-1 rounded-3 m-3 shadow">
                                 {
                                     post?.postImage && (
-                                        <img src={`${BASE_URL}/${post.postImage}`} alt='post image' style={{ height: '230px' }} />
+                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
                                     )
                                 }
                                 <h3 className='text-center'>{post.postTitle}</h3>

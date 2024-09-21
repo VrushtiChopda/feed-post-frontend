@@ -10,7 +10,7 @@ const UserProfile = () => {
     useEffect(() => {
         const profileData = async () => {
             const profileDetail = await dispatch(userProfile())
-            console.log(profileDetail.payload.data.data, "--------user Data-----")
+            // console.log(profileDetail.payload.data.data, "--------user Data-----")
             setProfile(profileDetail.payload.data.data)
         }
         profileData()

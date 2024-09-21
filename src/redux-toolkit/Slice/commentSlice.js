@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie'
-const token = Cookies.get('token')
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 const initialState = {
@@ -10,7 +9,10 @@ const initialState = {
     error: false
 }
 
+//------------- add comment -----------------------
 export const addComment = createAsyncThunk('/addcomment', async ({ postId, comment }) => {
+    const token = Cookies.get('token')
+    console.log(token, "----- token while add comment -------")
     try {
         const res = await axios.post(`${BASE_URL}/comment/addComment`, { postId, comment },
             {
@@ -25,7 +27,9 @@ export const addComment = createAsyncThunk('/addcomment', async ({ postId, comme
     }
 })
 
+//------------- get comment -----------------------
 export const getComment = createAsyncThunk('/getcomment', async (postId) => {
+    const token = Cookies.get('token')
     try {
         const res = await axios.get(`${BASE_URL}/comment/getCommentById/${postId}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -36,6 +40,7 @@ export const getComment = createAsyncThunk('/getcomment', async (postId) => {
     }
 })
 
+//------------- edit comment -----------------------
 export const editComment = createAsyncThunk('/updatecomment', async ({ commentId, comment }) => {
     const token = Cookies.get('token')
     try {
@@ -50,6 +55,7 @@ export const editComment = createAsyncThunk('/updatecomment', async ({ commentId
     }
 })
 
+//------------- delete comment -----------------------
 export const deleteComment = createAsyncThunk('/deleteComment', async (commentId) => {
     const token = Cookies.get('token')
     try {
@@ -64,6 +70,7 @@ export const deleteComment = createAsyncThunk('/deleteComment', async (commentId
     }
 })
 
+//------------- delete comment by auth user -----------------------
 export const deleteCommentByAuthorizedUser = createAsyncThunk('/deleteCommentByUSer', async (commentId) => {
     const token = Cookies.get('token')
     try {
