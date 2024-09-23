@@ -1,4 +1,4 @@
-import { Formik } from 'formik'
+import { ErrorMessage, Formik } from 'formik'
 import React from 'react'
 import { object, string } from 'yup'
 import './login.css'
@@ -53,6 +53,7 @@ const Login = () => {
                                         value={formik.values.email}
                                         onChange={formik.handleChange}
                                     />
+                                    <ErrorMessage name='email' component="div" className="text-danger" />
                                 </div>
                                 <div className="form-group mb-3">
                                     <label htmlFor="password">Password</label>
@@ -62,6 +63,8 @@ const Login = () => {
                                         value={formik.values.password}
                                         onChange={formik.handleChange}
                                     />
+                                    <ErrorMessage name='password' component="div" className="text-danger" />
+
                                 </div>
                                 <div className='d-grid mb-3'>
                                     <button

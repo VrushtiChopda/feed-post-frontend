@@ -7,7 +7,7 @@ import { MdOutlineDelete } from 'react-icons/md';
 import { deletePost, updatePost } from '../../redux-toolkit/Slice/postSlice';
 import { getPostByUserId } from '../../redux-toolkit/Slice/userPostSlice';
 import { addComment, deleteCommentByAuthorizedUser, editComment, getComment } from '../../redux-toolkit/Slice/commentSlice';
-import { addReply, deleteReply, getReply, updateReply } from '../../redux-toolkit/Slice/replySlice';
+import { addReply, deleteReply, deleteReplyByAuthorizedUser, getReply, updateReply } from '../../redux-toolkit/Slice/replySlice';
 import { Input, TextareaAutosize } from '@mui/material';
 import * as Yup from 'yup'
 import user from '../../assets/user.png'
@@ -245,6 +245,15 @@ const UserPostDetails = () => {
             handleGetReply(commentId)
         }
     }
+
+    //------------- delete Reply By Auth user ----------
+    const handleDeleteReplyByAuthUser = async (replyId, commentId) => {
+        const res = await dispatch(deleteReplyByAuthorizedUser(replyId))
+        console.log(res, "response in handleDeleteReply")
+        if (res.meta.requestStatus === 'fulfilled') {
+            handleGetReply(commentId)
+        }
+    }
     return (
         <>
             <h1 className='text-center'>My post</h1>
@@ -352,14 +361,14 @@ const UserPostDetails = () => {
                                                     >Add</button>
                                                 </div>
                                             </div>
-                                            {replyData[comment._id] && replyData[comment._id]?.map((reply) => (
-                                                <div key={reply._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                                            {replyData[comment?._id] && replyData[comment?._id]?.map((reply) => (
+                                                <div key={reply?._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
                                                     <div className='d-flex'>
                                                         <img src={user} style={{ width: '30px', maxHeight: '30px' }} alt='User' />
                                                         <div className='px-2'>
-                                                            <h6 className='m-0 p-0'>{reply.userId.fullName}</h6>
+                                                            <h6 className='m-0 p-0'>{reply?.userId?.fullName}</h6>
                                                             {
-                                                                editReplyId === reply._id ? (
+                                                                editReplyId === reply?._id ? (
                                                                     <div className='d-flex'>
                                                                         <Input
                                                                             value={editedReply}
@@ -368,31 +377,33 @@ const UserPostDetails = () => {
                                                                         />
                                                                         <button
                                                                             className='btn btn-sm btn-outline-primary'
-                                                                            onClick={() => handleUpdateReply(comment._id, reply._id)}
+                                                                            onClick={() => handleUpdateReply(comment?._id, reply?._id)}
                                                                         >Update</button>
                                                                     </div>
                                                                 ) : (
-                                                                    <p className='text-break m-0 p-0'>{reply.commentReply}</p>
+                                                                    <p className='text-break m-0 p-0'>{reply?.commentReply}</p>
                                                                 )
                                                             }
                                                         </div>
                                                     </div>
-                                                    {
-                                                        authUser && authUser._id === reply.userId._id && (
-                                                            <div className='d-flex justify-content-end mt-2'>
+                                                    <div className='d-flex justify-content-end mt-2'>
+                                                        {
+                                                            authUser && authUser?._id === reply?.userId?._id && (
+
                                                                 <LiaEdit
                                                                     className='mx-2 text-primary'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                    onClick={() => handleEditReply(reply._id, reply.commentReply)}
+                                                                    onClick={() => handleEditReply(reply?._id, reply?.commentReply)}
                                                                 />
-                                                                <MdOutlineDelete
-                                                                    className='text-danger'
-                                                                    style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                    onClick={() => handleDeleteReply(reply._id, comment._id)}
-                                                                />
-                                                            </div>
-                                                        )
-                                                    }
+
+                                                            )
+                                                        }
+                                                        < MdOutlineDelete
+                                                            className='text-danger'
+                                                            style={{ fontSize: '25px', fontWeight: 'bolder' }}
+                                                            onClick={() => handleDeleteReplyByAuthUser(reply?._id, comment?._id)}
+                                                        />
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>

@@ -1,4 +1,4 @@
-import { Formik } from 'formik'
+import { ErrorMessage, Formik } from 'formik'
 import React from 'react'
 import './registration.css'
 import { object, string } from 'yup'
@@ -33,7 +33,7 @@ const Registration = () => {
             toast.error("registration failed")
         }
     }
-    
+
     return (
         <>
             <div className='reg-container'>
@@ -51,12 +51,12 @@ const Registration = () => {
                                         htmlFor="fullName"
                                     >Full name</label>
                                     <input
-                                        type="fullName"
                                         className="form-control"
                                         id="fullName"
                                         value={formik.values.fullName}
                                         onChange={formik.handleChange}
                                     />
+                                    <ErrorMessage name='fullName' component="div" className="text-danger" />
                                 </div>
                                 <div className="form-group mb-3">
                                     <label
@@ -69,6 +69,7 @@ const Registration = () => {
                                         value={formik.values.email}
                                         onChange={formik.handleChange}
                                     />
+                                    <ErrorMessage name='email' component="div" className="text-danger" />
                                 </div>
                                 <div className="form-group mb-3">
                                     <label
@@ -81,6 +82,7 @@ const Registration = () => {
                                         value={formik.values.password}
                                         onChange={formik.handleChange}
                                     />
+                                    <ErrorMessage name='password' component="div" className="text-danger" />
                                 </div>
                                 <div className='d-grid mb-3'>
                                     <button

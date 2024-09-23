@@ -10,6 +10,7 @@ import Post from './components/Post/Post';
 import Dashboard from './components/sidebar/Dashboard';
 import PostDetail from './components/Post/PostDetail';
 import UserPostDetails from './components/Post/UserPostDetails';
+import NavbarPage from './pages/NavbarPage';
 
 function App() {
   return (

@@ -26,8 +26,17 @@ export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, 
 
 //---------------- get reply ------------------------
 export const getReply = createAsyncThunk('/getReply', async (commentId) => {
-    const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`)
+    const token = Cookies.get('token')
+    const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    console.log(res, "--------- reply data ------")
     return res.data
+
 })
 
 //---------------- update reply ------------------------
@@ -58,6 +67,17 @@ export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
     return res.data
 })
 
+export const deleteReplyByAuthorizedUser = createAsyncThunk('/deleteReplyByAuthUser', async (replyId) => {
+    console.log(replyId, "----------- replyId ---------------")
+    const token = Cookies.get('token')
+    const res = await axios.delete(`${BASE_URL}/reply/deleteReplyByAuthUser/${replyId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    console.log(res, "res in delete Reply by auth user")
+    return res.data
+})
 const replySlice = createSlice({
     name: 'reply',
     initialState: initialState,
@@ -97,6 +117,18 @@ const replySlice = createSlice({
                 state.reply = action.payload.data
             })
             .addCase(deleteReply.rejected, (state, action) => {
+                state.error = action.error.message
+                state.loading = false
+            })
+            .addCase(deleteReplyByAuthorizedUser.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(deleteReplyByAuthorizedUser.fulfilled, (state, action) => {
+                state.loading = false
+                state.reply = action.payload.data
+            })
+            .addCase(deleteReplyByAuthorizedUser.rejected, (state, action) => {
                 state.error = action.error.message
                 state.loading = false
             })

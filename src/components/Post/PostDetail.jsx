@@ -131,6 +131,7 @@ const PostDetail = () => {
                 setCommentById(comments);
                 // console.log(commentById, "------------=comment=-----------")
                 comments.forEach((comment) => {
+                    console.log(comment._id, "--------handleGetCOmment------")
                     handleGetReply(comment._id);
                 });
             }
@@ -183,14 +184,17 @@ const PostDetail = () => {
 
     //------------------ get reply ----------------------------
     const handleGetReply = async (commentId) => {
+        console.log(commentId, "-------------handleGetReply----------")
         try {
             const res = await dispatch(getReply(commentId));
+            console.log(res, "res of get reply")
             if (res.meta.requestStatus === 'fulfilled') {
                 setReplyData((prevReplyData) => ({
                     ...prevReplyData,
                     [commentId]: res.payload.data,
                 }));
             }
+            console.log(replyData, "--------- reply data ------")
         } catch (error) {
             console.log(error);
         }
@@ -204,6 +208,7 @@ const PostDetail = () => {
     }
 
     const handleUpdateReply = async (commentId, replyId) => {
+        console.log(commentId, "------ handleUpdateReply -----------")
         const data = { id: replyId, text: editedReply }
         const res = await dispatch(updateReply(data))
         // console.log(res, "response in handleUpdateReply")
@@ -216,6 +221,7 @@ const PostDetail = () => {
 
     //------------ delete reply -------------------------
     const handleDeleteReply = async (replyId, commentId) => {
+        console.log(commentId, "--------- handleDeleteReply -------------")
         const res = await dispatch(deleteReply(replyId))
         // console.log(res, "response in handleDeleteReply")
         if (res.meta.requestStatus === 'fulfilled') {
@@ -335,12 +341,12 @@ const PostDetail = () => {
                                                     >Add</button>
                                                 </div>
                                             </div>
-                                            {replyData[comment._id] && replyData[comment._id]?.map((reply) => (
-                                                <div key={reply._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
+                                            {replyData[comment?._id] && replyData[comment?._id]?.map((reply) => (
+                                                <div key={reply?._id} className='p-1 m-2 border border-1 rounded-2 shadow-sm text-xl'>
                                                     <div className='d-flex'>
                                                         <img src={user} style={{ width: '30px', maxHeight: '30px' }} alt='User' />
                                                         <div className='px-2'>
-                                                            <h6 className='m-0 p-0'>{reply.userId.fullName}</h6>
+                                                            <h6 className='m-0 p-0'>{reply?.userId?.fullName}</h6>
                                                             {
                                                                 editReplyId === reply._id ? (
                                                                     <div className='d-flex'>
@@ -361,17 +367,17 @@ const PostDetail = () => {
                                                         </div>
                                                     </div>
                                                     {
-                                                        authUser && authUser._id === reply.userId._id && (
+                                                        authUser && authUser?._id === reply?.userId?._id && (
                                                             <div className='d-flex justify-content-end mt-2'>
                                                                 <LiaEdit
                                                                     className='mx-2 text-primary'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                    onClick={() => handleEditReply(reply._id, reply.commentReply)}
+                                                                    onClick={() => handleEditReply(reply?._id, reply?.commentReply)}
                                                                 />
                                                                 <MdOutlineDelete
                                                                     className='text-danger'
                                                                     style={{ fontSize: '25px', fontWeight: 'bolder' }}
-                                                                    onClick={() => handleDeleteReply(reply._id, comment._id)}
+                                                                    onClick={() => handleDeleteReply(reply?._id, comment?._id)}
                                                                 />
                                                             </div>
                                                         )
