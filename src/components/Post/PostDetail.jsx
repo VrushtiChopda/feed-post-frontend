@@ -18,10 +18,10 @@ const PostDetail = () => {
     const location = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
+    console.log(location, "location")
     const [show, setShow] = useState(false)
-    const [post, setPost] = useState(location.state.postdata)
-
+    const [post, setPost] = useState(location?.state?.postdata)
+    console.log(post, '----------------------------------------------------------------------')
     const [comment, setComment] = useState('')
     const [commentById, setCommentById] = useState([])
     const [editingCommentId, setEditingCommentId] = useState(null)
@@ -38,13 +38,13 @@ const PostDetail = () => {
     const handleShow = () => setShow(true)
 
     const BASE_URL = process.env.REACT_APP_BASE_URL
-    const postModifiedImagePath = post.postImage.replace(/\\/g, '/');
+    // const postModifiedImagePath = post.postImage.replace(/\\/g, '/');
 
     //---------- formik -----------------
     const initialValues = {
-        postTitle: post.postTitle,
-        description: post.description,
-        postImage: postModifiedImagePath
+        postTitle: post?.postTitle,
+        description: post?.description,
+        postImage: post?.postImage
     }
 
     const schemaValidation = Yup.object({
@@ -71,7 +71,7 @@ const PostDetail = () => {
                 navigate('/dashboard/posts')
             }
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message)
+                toast.error(res.error.message || 'post is not deleted')
             }
         } catch (error) {
             console.log(error)
@@ -91,7 +91,7 @@ const PostDetail = () => {
             }
             formData.append('postTitle', postData.postTitle)
             formData.append('description', postData.description)
-            // console.log(formData, "--------- form data -------------")
+            // console.log(formData, "--------- form data -------------")               
             const res = await dispatch(updatePost({ postId: post._id, postData: formData }));
             if (res.meta.requestStatus === "fulfilled") {
                 setPost({
@@ -102,6 +102,9 @@ const PostDetail = () => {
                 })
                 handleClose()
                 navigate('/dashboard/posts')
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.error.message || 'post is not updated')
             }
         } catch (error) {
             console.log(error)
@@ -116,6 +119,9 @@ const PostDetail = () => {
             if (res.meta.requestStatus === 'fulfilled') {
                 setComment('')
                 handleGetComment()
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.error.message || 'comment is not added')
             }
         } catch (error) {
             console.log(error)
@@ -153,6 +159,9 @@ const PostDetail = () => {
             setEditingCommentId(null);
             setEditedComment('')
         }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'comment is not updated')
+        }
         // console.log(res, 'response in handle updated comment');
     };
 
@@ -162,6 +171,9 @@ const PostDetail = () => {
         // console.log(res, "res in handleDeleteComment")
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetComment()
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'comment is not deleted')
         }
     }
 
@@ -179,6 +191,9 @@ const PostDetail = () => {
         if (res.meta.requestStatus === 'fulfilled') {
             setReply(prev => ({ ...prev, [commentId]: '' }))
             handleGetReply(commentId)
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not added')
         }
     }
 
@@ -217,6 +232,9 @@ const PostDetail = () => {
             setEditReplyId(null)
             handleGetReply(commentId)
         }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not updated')
+        }
     }
 
     //------------ delete reply -------------------------
@@ -226,6 +244,9 @@ const PostDetail = () => {
         // console.log(res, "response in handleDeleteReply")
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetReply(commentId)
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not deleted')
         }
     }
 
@@ -243,7 +264,7 @@ const PostDetail = () => {
                         <div className="border border-1 rounded-3 m-3 shadow">
                             {
                                 post?.postImage && (
-                                    <img src={`${BASE_URL}/${postModifiedImagePath}`} className='rounded-top-3 object-fit-cover' alt='post image' />
+                                    <img src={`${BASE_URL}/${post?.postImage}`} className='rounded-top-3 object-fit-cover' alt='post image' />
                                 )
                             }
                             <h3 className='text-center'>{post.postTitle}</h3>
@@ -404,7 +425,7 @@ const PostDetail = () => {
                             >
                                 {({ setFieldValue }) => (
                                     <FormikForm>
-                                        {postModifiedImagePath && (
+                                        {/* {postModifiedImagePath && (
                                             <div className="mb-3">
                                                 <img
                                                     src={`${BASE_URL}/${postModifiedImagePath}`}
@@ -412,7 +433,7 @@ const PostDetail = () => {
                                                     style={{ width: '100%', height: 'auto' }}
                                                 />
                                             </div>
-                                        )}
+                                        )} */}
                                         <label htmlFor="postImage">Upload Image</label>
                                         <input
                                             type="file"
@@ -451,7 +472,7 @@ const PostDetail = () => {
 
                     <ToastContainer
                         position="top-right"
-                        autoClose={5000}
+                        autoClose={2000}
                         hideProgressBar={false}
                         newestOnTop={false}
                         closeOnClick

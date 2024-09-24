@@ -4,6 +4,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Cookies from 'js-cookie'
 import { Link, useNavigate } from 'react-router-dom';
+import { NavDropdown } from 'react-bootstrap';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 const NavbarPage = () => {
     const navigate = useNavigate()
@@ -13,18 +15,28 @@ const NavbarPage = () => {
     }
     return (
         <>
-            <Navbar style={{ backgroundColor: '#23283d' }}>
+            <Navbar fixed='top' style={{ backgroundColor: '#23283d', position: 'sticky' }}>
                 <Container>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
-                        <Nav className="me-auto">
-                            <Navbar.Brand className='text-white'>FEED-POST</Navbar.Brand>
+                        <Nav className="me-auto mt-2">
+                            <h4 className='text-white'>FEED-POST</h4>
                         </Nav>
                         <Nav>
-                            <Link className='text-white mx-3 text-decoration-none' to="/dashboard/profile">Profile</Link>
+                            <NavDropdown title={<FaRegUserCircle fontSize={'30px'} color='white' />} id="basic-nav-dropdown">
+                                <NavDropdown.Item >
+                                    <Link className='text-black text-decoration-none' to="/dashboard/profile">Profile</Link>
+                                </NavDropdown.Item>
+                                <NavDropdown.Item >
+                                    <Link className='text-black text-decoration-none' onClick={handleLogout}>
+                                        Log-out
+                                    </Link>
+                                </NavDropdown.Item>
+                            </NavDropdown>
+                            {/* <Link className='text-white mx-3 text-decoration-none' to="/dashboard/profile">Profile</Link>
                             <Link className='text-white text-decoration-none' onClick={handleLogout}>
                                 Log-out
-                            </Link>
+                            </Link> */}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

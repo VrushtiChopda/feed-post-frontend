@@ -29,8 +29,11 @@ const Registration = () => {
                     }
                 })
             }
-        } catch {
-            toast.error("registration failed")
+            if (regData.meta.requestStatus === 'rejected') {
+                toast.error(regData.error.message || 'registration failed')
+            }
+        } catch (error) {
+            throw error
         }
     }
 
@@ -100,7 +103,7 @@ const Registration = () => {
                 </Formik>
                 <ToastContainer
                     position="top-right"
-                    autoClose={5000}
+                    autoClose={2000}
                     hideProgressBar={false}
                     newestOnTop={false}
                     closeOnClick

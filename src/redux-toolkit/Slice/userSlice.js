@@ -54,6 +54,21 @@ export const userProfile = createAsyncThunk('/profile', async () => {
     }
 })
 
+//-------------- update user -----------------------
+
+export const updateUserProfile = createAsyncThunk('/updateProfile', async ({ userId, userData }) => {
+    const token = Cookies.get('token')
+    try {
+        const data = await axios.put(`${BASE_URL}/user/updateuser/${userId}`, userData,
+            { headers: { Authorization: `Bearer ${token}` } }
+        )
+        console.log(data, "--------updateUserProfile--------")
+        return data
+    } catch (error) {
+        throw error
+    }
+})
+
 const userSlice = createSlice({
     name: 'user',
     initialState: initialState,
@@ -93,6 +108,18 @@ const userSlice = createSlice({
                 state.user = action.payload.data
             })
             .addCase(userProfile.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.error.message
+            })
+            .addCase(updateUserProfile.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.loading = false
+                state.user = action.payload.data
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.error.message
             })

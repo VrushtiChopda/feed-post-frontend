@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { getPost } from '../../redux-toolkit/Slice/postSlice';
 import { useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
-
+import { BiArchiveIn } from "react-icons/bi";
 const Post = () => {
     const [postDetail, setPostDetail] = useState(null);
     const [show, setShow] = useState(false);
@@ -28,9 +28,13 @@ const Post = () => {
         return postData.payload.data;
     };
 
+    const handleArchiveClick = () => {
+        console.log(postDetail)
+    }
+
     //------ Navigate to post detail page -------
     const handleClick = (post) => {
-        // console.log(post, " --------- post ------------")
+        console.log(post, " --------- post  in post page------------")
         navigate('/dashboard/postdetail', { state: { postdata: post } });
     };
     return (
@@ -43,14 +47,23 @@ const Post = () => {
                     </div>
                     {postDetail && postDetail.map((post) => (
                         <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
-                            <div className="border border-1 rounded-3 m-3 shadow" onClick={() => handleClick(post)}>
-                                {
-                                    post?.postImage && (
-                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
-                                    )
-                                }
-                                <h3 className="text-center">{post.postTitle}</h3>
-                                <h5 className="text-center">{post.description}</h5>
+                            <div className="border border-1 rounded-3 m-3 shadow position-relative" >
+                                <div
+                                    className="position-absolute end-0 m-2 p-1 bg-white rounded"
+                                    style={{ zIndex: 1 }}
+                                    onClick={handleArchiveClick}
+                                >
+                                    <BiArchiveIn size={24} />
+                                </div>
+                                <div onClick={() => handleClick(post)}>
+                                    {
+                                        post?.postImage && (
+                                            <img src={`${BASE_URL}/${post.postImage}`} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                                        )
+                                    }
+                                    <h3 className="text-center">{post.postTitle}</h3>
+                                    <h5 className="text-center">{post.description}</h5>
+                                </div>
                             </div>
                         </div>
                     ))}

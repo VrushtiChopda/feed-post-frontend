@@ -2,42 +2,96 @@ import React, { useEffect, useState } from 'react'
 import user from '../../assets/user1.jpg'
 import './User.css'
 import { useDispatch } from 'react-redux'
-import { userProfile } from '../../redux-toolkit/Slice/userSlice'
+import { updateUserProfile, userProfile } from '../../redux-toolkit/Slice/userSlice'
 import { Button, Modal } from 'react-bootstrap'
 import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
+import { toast, ToastContainer } from 'react-toastify'
+import { getPost } from '../../redux-toolkit/Slice/postSlice'
 
 const UserProfile = () => {
+    const [post, setPost] = useState(0)
     const [show, setShow] = useState(false);
-    const [profile, setProfile] = useState(null)
-
+    const [profileData, setProfileData] = useState(null)
+    const [image, setImage] = useState(null)
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const dispatch = useDispatch()
+
+    const BASE_URL = process.env.REACT_APP_BASE_URL
+    const postModifiedImagePath = profileData?.profile
+
+    console.log(postModifiedImagePath, "--------- modified path----------")
     useEffect(() => {
-        const profileData = async () => {
-            const profileDetail = await dispatch(userProfile())
-            // console.log(profileDetail.payload.data.data, "--------user Data-----")
-            setProfile(profileDetail.payload.data.data)
-        }
-        profileData()
+        getprofileData()
+        getTotalPost()
+
     }, [])
+    const getprofileData = async () => {
+        const profileDetail = await dispatch(userProfile())
+        // console.log(profileDetail.payload.data.data, "--------user Data-----")
+        setProfileData(profileDetail.payload.data.data)
+    }
+    const initialValues = {
+        fullName: profileData?.fullName,
+        email: profileData?.email
+    }
+
+    const schemaValidation = Yup.object({
+        fullName: Yup.string().required("fullname is required"),
+        email: Yup.string().email('email is required').required("email is required")
+    })
+
+    const handleSubmit = async (data) => {
+        try {
+            console.log(data, "------ data in handleSubmit-----------")
+            const formData = new FormData()
+            formData.append('fullName', data.fullName)
+            formData.append('email', data.email)
+            if (image) {
+                formData.append('profile', image)
+            }
+            const res = await dispatch(updateUserProfile({ userId: profileData._id, userData: formData }))
+            console.log(res, "res of handleSunmit")
+            if (res.meta.requestStatus === 'fulfilled') {
+                getprofileData()
+                handleClose()
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res?.payload?.data?.message || 'profile is not updated')
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    const getTotalPost = async () => {
+        try {
+            const res = await dispatch(getPost())
+            console.log(res, " res of get all post")
+            if (res.meta.requestStatus === 'fulfilled') {
+                const totalPost = res.payload.data.length || 0
+                setPost(totalPost)
+            }
+        } catch (error) {
+            throw error
+        }
+    }
 
     return (
         <>
-
             <div className="container mt-5 mb-5 ">
                 <button className='btn btn-outline-dark my-4' onClick={handleShow}>Edit Profile</button>
                 <div className="row no-gutters">
                     <div className="col-md-4 col-lg-4 px-0">
-                        <img src={user} />
+                        <img src={profileData && profileData?.profile ? `${BASE_URL}/${postModifiedImagePath}` : user} />
                     </div>
                     <div className="col-md-8 col-lg-8 px-0">
                         <div className="d-flex flex-column">
                             <div className="d-flex flex-row justify-content-between align-items-center p-4 bg-dark text-white">
-                                <h3 className="display-5">{profile?.fullName}</h3></div>
+                                <h3 className="display-5">{profileData?.fullName}</h3></div>
                             <div className="p-3 bg-black text-white">
-                                <h5>{profile?.email}</h5>
+                                <h5>{profileData?.email}</h5>
                             </div>
                             <div className="d-md-flex flex-row text-white">
                                 <div className="p-4 w-100 bg-primary text-center skill-block">
@@ -45,7 +99,7 @@ const UserProfile = () => {
                                     <h6>Follower</h6>
                                 </div>
                                 <div className="p-3 w-100 bg-success text-center skill-block">
-                                    <h4>10</h4>
+                                    <h4>{post}</h4>
                                     <h6>Post</h6>
                                 </div>
                                 <div className="p-3 w-100 bg-warning text-center skill-block">
@@ -54,22 +108,23 @@ const UserProfile = () => {
                                 </div>
                                 <div className="p-3 w-100 bg-danger text-center skill-block">
                                     <h4>100</h4>
-                                    <h6>History</h6>
+                                    <h6>Archived</h6>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Update post</Modal.Title>
+                        <Modal.Title>Update Profile</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Formik
-                        // initialValues={initialValues}
-                        // validationSchema={schemaValidation}
-                        // onSubmit={handleSubmit}
+                            initialValues={initialValues}
+                            validationSchema={schemaValidation}
+                            onSubmit={handleSubmit}
+                            enableReinitialize
                         >
                             {({ setFieldValue }) => (
                                 <FormikForm>
@@ -82,33 +137,33 @@ const UserProfile = () => {
                                         />
                                     </div> */}
                                     {/* )} */}
-                                    <label htmlFor="postImage">Upload Profile Image</label>
+                                    <label htmlFor="profile">Upload Profile Image</label>
                                     <input
                                         type="file"
                                         className="form-control"
-                                        id="postImage"
-                                        name='postImage'
+                                        id="profile"
+                                        name='profile'
                                         onChange={(e) => {
-                                            setFieldValue("postImage", e.target.files[0])
-                                            // setImage(e.target.files[0])
+                                            setFieldValue("profile", e.target.files[0])
+                                            setImage(e.target.files[0])
                                         }}
                                     />
                                     {/* {postModifiedImagePath && <p>Current Image: {postModifiedImagePath}</p>} */}
-                                    <label htmlFor="postTitle">Enter User Name</label>
+                                    <label htmlFor="fullName">Enter User Name</label>
                                     <Field
                                         className='form-control'
-                                        id='postTitle'
-                                        name='postTitle'
+                                        id='fullName'
+                                        name='fullName'
                                     />
-                                    <ErrorMessage name='postTitle' component="div" className="text-danger" />
+                                    <ErrorMessage name='fullName' component="div" className="text-danger" />
 
-                                    <label htmlFor="description">Enter Email</label>
+                                    <label htmlFor="email">Enter Email</label>
                                     <Field
                                         className='form-control'
-                                        id='description'
-                                        name='description'
+                                        id='email'
+                                        name='email'
                                     />
-                                    <ErrorMessage name='description' component="div" className="text-danger" />
+                                    <ErrorMessage name='email' component="div" className="text-danger" />
                                     <Button variant="primary" type='submit' className="mt-3">
                                         Update
                                     </Button>
@@ -117,6 +172,18 @@ const UserProfile = () => {
                         </Formik>
                     </Modal.Body>
                 </Modal>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme='dark'
+                />
             </div>
         </>
     )

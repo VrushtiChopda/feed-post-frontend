@@ -13,6 +13,7 @@ import * as Yup from 'yup'
 import user from '../../assets/user.png'
 import { Button, Modal } from 'react-bootstrap';
 import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik'
+import { toast, ToastContainer } from 'react-toastify';
 
 const UserPostDetails = () => {
     const dispatch = useDispatch()
@@ -104,6 +105,9 @@ const UserPostDetails = () => {
                 handleClose()
                 navigate('/dashboard/userpost')
             }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.error.message || 'post is not updated')
+            }
         } catch (error) {
             console.log(error)
         }
@@ -114,6 +118,9 @@ const UserPostDetails = () => {
         // console.log(res, "----- handleDeletePost response --------")
         if (res.meta.requestStatus === 'fulfilled') {
             navigate('/dashboard/userpost')
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'post is not deleted')
         }
     }
 
@@ -151,6 +158,9 @@ const UserPostDetails = () => {
                 }))
                 handleGetComment(postId)
             }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.error.message || 'comment is not added')
+            }
         } catch (error) {
             console.log(error)
         }
@@ -169,6 +179,9 @@ const UserPostDetails = () => {
             setEditingCommentId(null);
             setEditedComment('')
         }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'comment is noy updated')
+        }
         // console.log(res, 'response in handle updated comment');
     };
     // --------- delete comment---------------
@@ -177,6 +190,9 @@ const UserPostDetails = () => {
         // console.log(res, "res of handleDeleteComment")
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetComment(postId)
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'comment not deleted')
         }
     }
 
@@ -199,6 +215,9 @@ const UserPostDetails = () => {
                 [commentId]: ''
             }))
             handleGetReply(commentId)
+        }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not added')
         }
     }
 
@@ -235,16 +254,19 @@ const UserPostDetails = () => {
             setEditReplyId(null)
             handleGetReply(commentId)
         }
-    }
-
-    //------------ delete reply ----------------------
-    const handleDeleteReply = async (replyId, commentId) => {
-        const res = await dispatch(deleteReply(replyId))
-        // console.log(res, "response in handleDeleteReply")
-        if (res.meta.requestStatus === 'fulfilled') {
-            handleGetReply(commentId)
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not updated')
         }
     }
+
+    // //------------ delete reply ----------------------
+    // const handleDeleteReply = async (replyId, commentId) => {
+    //     const res = await dispatch(deleteReply(replyId))
+    //     // console.log(res, "response in handleDeleteReply")
+    //     if (res.meta.requestStatus === 'fulfilled') {
+    //         handleGetReply(commentId)
+    //     }
+    // }
 
     //------------- delete Reply By Auth user ----------
     const handleDeleteReplyByAuthUser = async (replyId, commentId) => {
@@ -253,7 +275,11 @@ const UserPostDetails = () => {
         if (res.meta.requestStatus === 'fulfilled') {
             handleGetReply(commentId)
         }
+        if (res.meta.requestStatus === 'rejected') {
+            toast.error(res.error.message || 'reply is not deleted')
+        }
     }
+
     return (
         <>
             <h1 className='text-center'>My post</h1>
@@ -470,6 +496,19 @@ const UserPostDetails = () => {
                     </Formik>
                 </Modal.Body>
             </Modal>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme='dark'
+            />
         </>
     )
 }

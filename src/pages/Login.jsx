@@ -28,10 +28,12 @@ const Login = () => {
                     }
                 })
             }
+            if (loginDetail.meta.requestStatus === 'rejected') {
+                toast.error(loginDetail.error.message || 'login failed')
+            }
         } catch (error) {
             toast.error("login failed")
         }
-
     }
     return (
         <>
@@ -81,7 +83,7 @@ const Login = () => {
                 </Formik>
                 <ToastContainer
                     position="top-right"
-                    autoClose={5000}
+                    autoClose={2000}
                     hideProgressBar={false}
                     newestOnTop={false}
                     closeOnClick
