@@ -28,10 +28,6 @@ const Post = () => {
         return postData.payload.data;
     };
 
-    const handleArchiveClick = () => {
-        console.log(postDetail)
-    }
-
     //------ Navigate to post detail page -------
     const handleClick = (post) => {
         console.log(post, " --------- post  in post page------------")
@@ -41,20 +37,14 @@ const Post = () => {
         <>
             <div className="container justify-content-center">
                 <div className="row">
-                    <h1 className="text-center">Post Details</h1>
+                    <h1 className="text-center m-2">Post Details</h1>
                     <div className="mt-3">
                         <button className="btn btn-outline-dark" onClick={handleShow}>+ ADD POST</button>
                     </div>
                     {postDetail && postDetail.map((post) => (
                         <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
-                            <div className="border border-1 rounded-3 m-3 shadow position-relative" >
-                                <div
-                                    className="position-absolute end-0 m-2 p-1 bg-white rounded"
-                                    style={{ zIndex: 1 }}
-                                    onClick={handleArchiveClick}
-                                >
-                                    <BiArchiveIn size={24} />
-                                </div>
+                            <div className="border border-1 rounded-3 m-3 shadow" >
+
                                 <div onClick={() => handleClick(post)}>
                                     {
                                         post?.postImage && (

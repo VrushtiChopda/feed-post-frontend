@@ -7,16 +7,20 @@ import { Button, Modal } from 'react-bootstrap'
 import { ErrorMessage, Field, Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 import { toast, ToastContainer } from 'react-toastify'
-import { getPost } from '../../redux-toolkit/Slice/postSlice'
+import { getArchivePost, getPost } from '../../redux-toolkit/Slice/postSlice'
+import { useNavigate } from 'react-router-dom'
 
 const UserProfile = () => {
     const [post, setPost] = useState(0)
     const [show, setShow] = useState(false);
     const [profileData, setProfileData] = useState(null)
     const [image, setImage] = useState(null)
+    const [archivePost, setArchivePost] = useState(null)
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const BASE_URL = process.env.REACT_APP_BASE_URL
     const postModifiedImagePath = profileData?.profile
@@ -25,7 +29,7 @@ const UserProfile = () => {
     useEffect(() => {
         getprofileData()
         getTotalPost()
-
+        getTotalArchivePost()
     }, [])
     const getprofileData = async () => {
         const profileDetail = await dispatch(userProfile())
@@ -78,13 +82,30 @@ const UserProfile = () => {
         }
     }
 
+    const getTotalArchivePost = async () => {
+        try {
+            const res = await dispatch(getArchivePost())
+            if (res.meta.requestStatus === 'fulfilled') {
+                const totalArchivePost = res.payload.data.length || 0
+                setArchivePost(totalArchivePost)
+            }
+            console.log(res)
+        } catch (error) {
+            throw error
+        }
+    }
+
+    const handleArchivePostClick = () => {
+        navigate('/dashboard/archivepost')
+    }
+
     return (
         <>
             <div className="container mt-5 mb-5 ">
                 <button className='btn btn-outline-dark my-4' onClick={handleShow}>Edit Profile</button>
                 <div className="row no-gutters">
                     <div className="col-md-4 col-lg-4 px-0">
-                        <img src={profileData && profileData?.profile ? `${BASE_URL}/${postModifiedImagePath}` : user} />
+                        <img src={profileData && profileData?.profile ? `${BASE_URL}/${postModifiedImagePath}` : user} style={{ objectFit: 'cover' }} />
                     </div>
                     <div className="col-md-8 col-lg-8 px-0">
                         <div className="d-flex flex-column">
@@ -106,12 +127,12 @@ const UserProfile = () => {
                                     <h4>30</h4>
                                     <h6>Tag</h6>
                                 </div>
-                                <div className="p-3 w-100 bg-danger text-center skill-block">
-                                    <h4>100</h4>
+                                <div className="p-3 w-100 bg-danger text-center skill-block" onClick={handleArchivePostClick}>
+                                    <h4>{archivePost}</h4>
                                     <h6>Archived</h6>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
 

@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { getPostByUserId } from '../../redux-toolkit/Slice/userPostSlice';
 import { useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
+import { BiArchiveIn } from 'react-icons/bi';
+import { archivePost } from '../../redux-toolkit/Slice/postSlice';
 
 const UserPost = () => {
     const [posts, setPosts] = useState([]);
@@ -24,6 +26,15 @@ const UserPost = () => {
         setPosts(res?.payload?.data?.data);
     };
 
+    const handleArchiveClick = async (postId) => {
+        console.log(postId, "--------- postId in archive")
+        const res = await dispatch(archivePost(postId, true))
+        if (res.meta.requestStatus === 'fulfilled') {
+            getAllPosts()
+        }
+        console.log(res, "---------- res in archive ------------ ")
+    }
+
     // Navigate to post detail page
     const handleClick = (post) => {
         navigate('/dashboard/userpostdetail', { state: { postData: post } });
@@ -33,22 +44,49 @@ const UserPost = () => {
         <>
             <div className="container">
                 <div className="row">
-                    <h1 className='text-center'>My Posts</h1>
+                    <h1 className='text-center m-2'>My Posts</h1>
                     <div className='mt-3'>
                         <button className='btn btn-outline-dark' onClick={() => setShow(true)}> + ADD POST</button>
                     </div>
                     {posts && posts.map((post) => (
-                        <div className='col-lg-4 col-md-6 col-sm-12' onClick={() => handleClick(post)}>
-                            <div className="border border-1 rounded-3 m-3 shadow">
-                                {
-                                    post?.postImage && (
-                                        <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
-                                    )
-                                }
-                                <h3 className='text-center'>{post.postTitle}</h3>
-                                <h5 className='text-center'>{post.description}</h5>
+                        <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
+                            <div className="border border-1 rounded-3 m-3 shadow position-relative" >
+                                <div
+                                    className="position-absolute end-0 m-2 p-1 bg-white rounded"
+                                    style={{ zIndex: 1 }}
+                                    onClick={() => handleArchiveClick(post._id)}
+                                >
+                                    <BiArchiveIn size={24} />
+                                </div>
+                                <div onClick={() => handleClick(post)}>
+                                    {
+                                        post?.postImage && (
+                                            <img src={`${BASE_URL}/${post.postImage}`} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                                        )
+                                    }
+                                    <h3 className="text-center">{post.postTitle}</h3>
+                                    <h5 className="text-center">{post.description}</h5>
+                                </div>
                             </div>
                         </div>
+                        // <div className='col-lg-4 col-md-6 col-sm-12 position-relative' onClick={() => handleClick(post)}>
+                        //     <div
+                        //         className="position-absolute end-0 m-2 p-1 bg-white rounded"
+                        //         style={{ zIndex: 1 }}
+                        //     // onClick={handleArchiveClick}
+                        //     >
+                        //         <BiArchiveIn size={24} />
+                        //     </div>
+                        //     <div className="border border-1 rounded-3 m-3 shadow">
+                        //         {
+                        //             post?.postImage && (
+                        //                 <img src={`${BASE_URL}/${post.postImage}`} className='object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                        //             )
+                        //         }
+                        //         <h3 className='text-center'>{post.postTitle}</h3>
+                        //         <h5 className='text-center'>{post.description}</h5>
+                        //     </div>
+                        // </div>
                     ))}
                 </div>
             </div>

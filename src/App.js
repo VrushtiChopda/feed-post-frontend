@@ -10,7 +10,7 @@ import Post from './components/Post/Post';
 import Dashboard from './components/sidebar/Dashboard';
 import PostDetail from './components/Post/PostDetail';
 import UserPostDetails from './components/Post/UserPostDetails';
-import NavbarPage from './pages/NavbarPage';
+import ArchivePost from './components/Post/ArchivePost';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
             <Route path='profile' element={<UserProfile />} />
             <Route path='postdetail' element={<PostDetail />} />
             <Route path='userpostdetail' element={<UserPostDetails />} />
+            <Route path='archivepost' element={<ArchivePost />} />
           </Route>
         </Routes>
       </Router>

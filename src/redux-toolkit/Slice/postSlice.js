@@ -76,6 +76,35 @@ export const deletePost = createAsyncThunk('/deletePost', async (postId) => {
     }
 })
 
+//---------------- archive post -------------------------
+export const archivePost = createAsyncThunk('/archivePost', async ({postId, archiveStatus}) => {
+    console.log(archiveStatus, "status")
+    const token = Cookies.get('token')
+    console.log(token, "---------- token in archive post -------")
+    try {
+        const data = await axios.patch(`${BASE_URL}/post/archivePost/${postId}`, { isArchive: archiveStatus },
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        )
+        console.log(data, "------- data in archivePost slice -----------")
+        return data.data
+    } catch (error) {
+        throw error
+    }
+})
+
+//---------------- get archive post -----------------------
+export const getArchivePost = createAsyncThunk('/getarchivepost', async () => {
+    try {
+        const data = await axios.get(`${BASE_URL}/post/getArchivePost`)
+        console.log(data, "data in getArchivePost slice")
+        return data.data
+    } catch (error) {
+        throw error
+    }
+})
+
 const PostSlice = createSlice({
     name: 'post',
     initialState,
@@ -127,6 +156,30 @@ const PostSlice = createSlice({
                 state.post = action.payload.data
             })
             .addCase(deletePost.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.error.message
+            })
+            .addCase(archivePost.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(archivePost.fulfilled, (state, action) => {
+                state.loading = false
+                state.post = action.payload.data
+            })
+            .addCase(archivePost.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.error.message
+            })
+            .addCase(getArchivePost.pending, (state) => {
+                state.loading = true
+                state.error = false
+            })
+            .addCase(getArchivePost.fulfilled, (state, action) => {
+                state.loading = false
+                state.post = action.payload.data
+            })
+            .addCase(getArchivePost.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.error.message
             })
