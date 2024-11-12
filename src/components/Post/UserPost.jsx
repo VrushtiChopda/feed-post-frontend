@@ -28,7 +28,7 @@ const UserPost = () => {
 
     const handleArchiveClick = async (postId) => {
         console.log(postId, "--------- postId in archive")
-        const res = await dispatch(archivePost(postId, true))
+        const res = await dispatch(archivePost({ postId, archiveStatus: true }))
         if (res.meta.requestStatus === 'fulfilled') {
             getAllPosts()
         }
@@ -45,23 +45,23 @@ const UserPost = () => {
             <div className="container">
                 <div className="row">
                     <h1 className='text-center m-2'>My Posts</h1>
-                    <div className='mt-3'>
+                    <div className='col-12 text-center mt-3'>
                         <button className='btn btn-outline-dark' onClick={() => setShow(true)}> + ADD POST</button>
                     </div>
                     {posts && posts.map((post) => (
-                        <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
+                        <div key={post?._id} className="col-lg-4 col-md-6 col-sm-12">
                             <div className="border border-1 rounded-3 m-3 shadow position-relative" >
                                 <div
                                     className="position-absolute end-0 m-2 p-1 bg-white rounded"
                                     style={{ zIndex: 1 }}
-                                    onClick={() => handleArchiveClick(post._id)}
+                                    onClick={() => handleArchiveClick(post?._id)}
                                 >
                                     <BiArchiveIn size={24} />
                                 </div>
                                 <div onClick={() => handleClick(post)}>
                                     {
-                                        post?.postImage && (
-                                            <img src={`${BASE_URL}/${post.postImage}`} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                                        post?.onCloudinaryLink && (
+                                            <img src={post.onCloudinaryLink} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
                                         )
                                     }
                                     <h3 className="text-center">{post.postTitle}</h3>

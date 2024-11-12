@@ -5,7 +5,6 @@ import { MdOutlineUnarchive } from 'react-icons/md'
 
 const ArchivePost = () => {
     const [post, setPost] = useState([])
-    const BASE_URL = process.env.REACT_APP_BASE_URL
     const dispatch = useDispatch()
 
     const getAllArchivePost = async () => {
@@ -47,8 +46,8 @@ const ArchivePost = () => {
                                         </div>
                                         <div>
                                             {
-                                                postData?.postImage && (
-                                                    <img src={`${BASE_URL}/${postData.postImage}`} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                                                postData?.onCloudinaryLink && (
+                                                    <img src={postData?.onCloudinaryLink} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
                                                 )
                                             }
                                             <h3 className="text-center">{postData.postTitle}</h3>

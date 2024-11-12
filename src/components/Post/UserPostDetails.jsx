@@ -100,7 +100,7 @@ const UserPostDetails = () => {
                     ...posts,
                     postTitle: postData.postTitle,
                     description: postData.description,
-                    postImage: postData.postImage
+                    postImage: postData.onCloudinaryLink
                 })
                 handleClose()
                 navigate('/dashboard/userpost')
@@ -288,8 +288,8 @@ const UserPostDetails = () => {
                     <div key={posts._id} className='col-lg-6'>
                         <div className=" border border-1 rounded-3 m-3 shadow">
                             {
-                                posts?.postImage && (
-                                    <img src={`${BASE_URL}/${posts.postImage}`} alt='post image' className='rounded-top-3' />
+                                posts?.onCloudinaryLink && (
+                                    <img src={posts?.onCloudinaryLink} alt='post image' className='rounded-top-3' />
                                 )
                             }
                             <h3 className='text-center'>{posts?.postTitle}</h3>

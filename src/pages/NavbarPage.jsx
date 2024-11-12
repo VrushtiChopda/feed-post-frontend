@@ -13,6 +13,7 @@ const NavbarPage = () => {
         Cookies.remove('token')
         navigate('/')
     }
+
     return (
         <>
             <Navbar fixed='top' style={{ backgroundColor: '#23283d', position: 'sticky' }}>

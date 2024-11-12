@@ -14,7 +14,6 @@ const Post = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const handleShow = () => setShow(true);
-    const BASE_URL = process.env.REACT_APP_BASE_URL
 
     useEffect(() => {
         getAllPost();
@@ -38,8 +37,8 @@ const Post = () => {
             <div className="container justify-content-center">
                 <div className="row">
                     <h1 className="text-center m-2">Post Details</h1>
-                    <div className="mt-3">
-                        <button className="btn btn-outline-dark" onClick={handleShow}>+ ADD POST</button>
+                    <div className="col-12 text-center mt-3">
+                        <button className="btn btn-outline-dark " onClick={handleShow}>+ ADD POST</button>
                     </div>
                     {postDetail && postDetail.map((post) => (
                         <div key={post._id} className="col-lg-4 col-md-6 col-sm-12">
@@ -47,12 +46,12 @@ const Post = () => {
 
                                 <div onClick={() => handleClick(post)}>
                                     {
-                                        post?.postImage && (
-                                            <img src={`${BASE_URL}/${post.postImage}`} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
+                                        post?.onCloudinaryLink && (
+                                            <img src={post?.onCloudinaryLink} className=' object-fit-cover rounded-top-3' alt='post image' style={{ height: '230px' }} />
                                         )
                                     }
-                                    <h3 className="text-center">{post.postTitle}</h3>
-                                    <h5 className="text-center">{post.description}</h5>
+                                    <h3 className="text-center">{post?.postTitle}</h3>
+                                    <h5 className="text-center">{post?.description}</h5>
                                 </div>
                             </div>
                         </div>

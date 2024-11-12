@@ -44,7 +44,7 @@ const PostDetail = () => {
     const initialValues = {
         postTitle: post?.postTitle,
         description: post?.description,
-        postImage: post?.postImage
+        postImage: post?.onCloudinaryLink
     }
 
     const schemaValidation = Yup.object({
@@ -80,46 +80,87 @@ const PostDetail = () => {
 
     //------------ update post -----------------
     const handleSubmit = async (postData) => {
-        // console.log(postData, "postData in handleSubmit")
-        // console.log(post.postImage, "===============", postData.postImage)
+        console.log(postData, "postData in handleSubmit");
+        console.log(post, "========post=======");
         try {
-            const formData = new FormData()
+            const formData = new FormData();
+
+            // Append image to FormData
             if (image) {
-                formData.append('postImage', image);
+                formData.append('postImage', image);  // New image selected
             } else {
-                formData.append('postImage', post.postImage)
+                formData.append('postImage', post?.onCloudinaryLink);  // Use the existing Cloudinary image link
             }
-            formData.append('postTitle', postData.postTitle)
-            formData.append('description', postData.description)
-            // console.log(formData, "--------- form data -------------")               
-            const res = await dispatch(updatePost({ postId: post._id, postData: formData }));
+
+            // Append other fields
+            formData.append('postTitle', postData?.postTitle);
+            formData.append('description', postData?.description);
+
+            const res = await dispatch(updatePost({ postId: post?._id, postData: formData }));
+
             if (res.meta.requestStatus === "fulfilled") {
+                // Update the post state with the new data
                 setPost({
                     ...post,
-                    postTitle: postData.postTitle,
-                    description: postData.description,
-                    postImage: postData.postImage || post.postImage
-                })
-                handleClose()
-                navigate('/dashboard/posts')
+                    postTitle: postData?.postTitle,
+                    description: postData?.description,
+                    postImage: image ? URL.createObjectURL(image) : post?.onCloudinaryLink // Handle the image update in state
+                });
+                handleClose();
+                navigate('/dashboard/posts');
             }
+
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'post is not updated')
+                toast.error(res.error.message || 'Post is not updated');
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
+
+
+    // const handleSubmit = async (postData) => {
+    //     console.log(postData, "postData in handleSubmit")
+    //     console.log(post, "========post=======")
+    //     try {
+    //         const formData = new FormData()
+    //         if (image) {
+    //             formData.append('postImage', image);
+    //         } else {
+    //             formData.append('postImage', post?.onCloudinaryLink)
+    //         }
+    //         formData.append('postTitle', postData?.postTitle)
+    //         formData.append('description', postData?.description)
+    //         // console.log(formData, "--------- form data -------------")               
+    //         const res = await dispatch(updatePost({ postId: post?._id, postData: formData }));
+    //         if (res.meta.requestStatus === "fulfilled") {
+    //             setPost({
+    //                 ...post,
+    //                 postTitle: postData?.postTitle,
+    //                 description: postData?.description,
+    //                 postImage: postData?.onCloudinaryLink || post?.onCloudinaryLink
+    //             })
+    //             handleClose()
+    //             navigate('/dashboard/posts')
+    //         }
+    //         if (res.meta.requestStatus === 'rejected') {
+    //             toast.error(res.error.message || 'post is not updated')
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     //------------- add comment --------------------
     const handleAddComment = async () => {
         try {
             // console.log(comment, "comment while add comment")
-            const res = await dispatch(addComment({ postId: post._id, comment }))
+            const res = await dispatch(addComment({ postId: post?._id, comment }))
             if (res.meta.requestStatus === 'fulfilled') {
                 setComment('')
                 handleGetComment()
             }
+            console.log(res, "resresresres")
             if (res.meta.requestStatus === 'rejected') {
                 toast.error(res.error.message || 'comment is not added')
             }
@@ -131,14 +172,14 @@ const PostDetail = () => {
     //-------------- get comment -----------------
     const handleGetComment = async () => {
         try {
-            const res = await dispatch(getComment(post._id));
+            const res = await dispatch(getComment(post?._id));
             if (res.meta.requestStatus === 'fulfilled') {
                 const comments = res.payload.data.data;
                 setCommentById(comments);
                 // console.log(commentById, "------------=comment=-----------")
                 comments.forEach((comment) => {
                     console.log(comment._id, "--------handleGetCOmment------")
-                    handleGetReply(comment._id);
+                    handleGetReply(comment?._id);
                 });
             }
         } catch (error) {
@@ -161,7 +202,7 @@ const PostDetail = () => {
         }
         if (res.meta.requestStatus === 'rejected') {
             toast.error(res.error.message || 'comment is not updated')
-        }
+        } 
         // console.log(res, 'response in handle updated comment');
     };
 
@@ -183,8 +224,8 @@ const PostDetail = () => {
     };
 
     const handleAddReply = async (commentId, postId) => {
-        const userId = authUser._id
-        const postsId = postId._id
+        const userId = authUser?._id
+        const postsId = postId?._id
         const replyText = reply[commentId]
         const res = await dispatch(addReply({ userId, postsId, commentId, replyText }))
         // console.log(res, "res in handleAddReply")
@@ -263,13 +304,13 @@ const PostDetail = () => {
                     <div className='col-lg-6'>
                         <div className="border border-1 rounded-3 m-3 shadow">
                             {
-                                post?.postImage && (
-                                    <img src={`${BASE_URL}/${post?.postImage}`} className='rounded-top-3 object-fit-cover' alt='post image' />
+                                post?.onCloudinaryLink && (
+                                    <img src={post?.onCloudinaryLink} className='rounded-top-3 object-fit-cover' alt='post image' />
                                 )
                             }
                             <h3 className='text-center'>{post.postTitle}</h3>
                             <h5 className='text-center'>{post.description}</h5>
-                            {authUser && authUser._id === post.userId && (
+                            {authUser && authUser?._id === post.userId && (
                                 <>
                                     <hr />
                                     <div className='text-center justify-content-center'>
@@ -425,15 +466,14 @@ const PostDetail = () => {
                             >
                                 {({ setFieldValue }) => (
                                     <FormikForm>
-                                        {/* {postModifiedImagePath && (
-                                            <div className="mb-3">
-                                                <img
-                                                    src={`${BASE_URL}/${postModifiedImagePath}`}
-                                                    alt="Current Post"
-                                                    style={{ width: '100%', height: 'auto' }}
-                                                />
-                                            </div>
-                                        )} */}
+                                        <div className="mb-3">
+                                            <img
+                                                src={post?.onCloudinaryLink}
+                                                alt="Current Post"
+                                                style={{ width: '100%', height: 'auto' }}
+                                            />
+                                        </div>
+
                                         <label htmlFor="postImage">Upload Image</label>
                                         <input
                                             type="file"

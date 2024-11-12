@@ -17,4 +17,5 @@ function Protected(props) {
         </>
     )
 }
+
 export default Protected

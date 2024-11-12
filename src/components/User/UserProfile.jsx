@@ -21,11 +21,8 @@ const UserProfile = () => {
     const handleShow = () => setShow(true);
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
     const BASE_URL = process.env.REACT_APP_BASE_URL
-    const postModifiedImagePath = profileData?.profile
-
-    console.log(postModifiedImagePath, "--------- modified path----------")
+    // console.log(postModifiedImagePath, "--------- modified path----------")
     useEffect(() => {
         getprofileData()
         getTotalPost()
@@ -102,10 +99,13 @@ const UserProfile = () => {
     return (
         <>
             <div className="container mt-5 mb-5 ">
-                <button className='btn btn-outline-dark my-4' onClick={handleShow}>Edit Profile</button>
+                <h1 className='text-center'>User Profile</h1>
+                <div className='col-12 text-center '>
+                    <button className='btn btn-outline-dark my-4' onClick={handleShow}>Edit Profile</button>
+                </div>
                 <div className="row no-gutters">
                     <div className="col-md-4 col-lg-4 px-0">
-                        <img src={profileData && profileData?.profile ? `${BASE_URL}/${postModifiedImagePath}` : user} style={{ objectFit: 'cover' }} />
+                        <img src={profileData && profileData?.profile ? `${BASE_URL}/${profileData?.profile}` : user} style={{ objectFit: 'cover' }} />
                     </div>
                     <div className="col-md-8 col-lg-8 px-0">
                         <div className="d-flex flex-column">
@@ -116,20 +116,20 @@ const UserProfile = () => {
                             </div>
                             <div className="d-md-flex flex-row text-white">
                                 <div className="p-4 w-100 bg-primary text-center skill-block">
-                                    <h4>20</h4>
-                                    <h6>Follower</h6>
-                                </div>
-                                <div className="p-3 w-100 bg-success text-center skill-block">
                                     <h4>{post}</h4>
                                     <h6>Post</h6>
+                                </div>
+                                <div className="p-3 w-100 bg-success text-center skill-block" onClick={handleArchivePostClick}>
+                                    <h4>{archivePost}</h4>
+                                    <h6>Archived</h6>
                                 </div>
                                 <div className="p-3 w-100 bg-warning text-center skill-block">
                                     <h4>30</h4>
                                     <h6>Tag</h6>
                                 </div>
-                                <div className="p-3 w-100 bg-danger text-center skill-block" onClick={handleArchivePostClick}>
-                                    <h4>{archivePost}</h4>
-                                    <h6>Archived</h6>
+                                <div className="p-3 w-100 bg-danger text-center skill-block" >
+                                    <h4>20</h4>
+                                    <h6>Follower</h6>
                                 </div>
                             </div>
                         </div>
