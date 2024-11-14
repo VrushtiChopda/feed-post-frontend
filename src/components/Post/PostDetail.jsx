@@ -71,10 +71,10 @@ const PostDetail = () => {
                 navigate('/dashboard/posts')
             }
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'post is not deleted')
+                toast.error(res.payload || 'post is not deleted')
             }
         } catch (error) {
-            console.log(error)
+            throw error
         }
     }
 
@@ -111,10 +111,10 @@ const PostDetail = () => {
             }
 
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'Post is not updated');
+                toast.error(res.payload || 'Post is not updated');
             }
         } catch (error) {
-            console.log(error);
+            throw error;
         }
     };
 
@@ -144,10 +144,10 @@ const PostDetail = () => {
     //             navigate('/dashboard/posts')
     //         }
     //         if (res.meta.requestStatus === 'rejected') {
-    //             toast.error(res.error.message || 'post is not updated')
+    //             toast.error(res.payload || 'post is not updated')
     //         }
     //     } catch (error) {
-    //         console.log(error)
+    //         throw error
     //     }
     // }
 
@@ -162,10 +162,10 @@ const PostDetail = () => {
             }
             console.log(res, "resresresres")
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'comment is not added')
+                toast.error(res.payload || 'comment is not added')
             }
         } catch (error) {
-            console.log(error)
+            throw error
         }
     }
 
@@ -183,7 +183,7 @@ const PostDetail = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
+            throw error;
         }
     };
 
@@ -194,27 +194,35 @@ const PostDetail = () => {
     };
 
     const handleUpdatedComment = async (commentId) => {
-        const res = await dispatch(editComment({ commentId, comment: editedComment }));
-        if (res.meta.requestStatus === 'fulfilled') {
-            handleGetComment();
-            setEditingCommentId(null);
-            setEditedComment('')
+        try {
+            const res = await dispatch(editComment({ commentId, comment: editedComment }));
+            if (res.meta.requestStatus === 'fulfilled') {
+                handleGetComment();
+                setEditingCommentId(null);
+                setEditedComment('')
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.payload || 'comment is not updated')
+            }
+            // console.log(res, 'response in handle updated comment');
+        } catch (error) {
+            throw error
         }
-        if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'comment is not updated')
-        } 
-        // console.log(res, 'response in handle updated comment');
     };
 
     //----------------- delete comment ----------------------------
     const handleDeleteComment = async (id) => {
-        const res = await dispatch(deleteComment(id))
-        // console.log(res, "res in handleDeleteComment")
-        if (res.meta.requestStatus === 'fulfilled') {
-            handleGetComment()
-        }
-        if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'comment is not deleted')
+        try {
+            const res = await dispatch(deleteComment(id))
+            // console.log(res, "res in handleDeleteComment")
+            if (res.meta.requestStatus === 'fulfilled') {
+                handleGetComment()
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.payload || 'comment is not deleted')
+            }
+        } catch (error) {
+            throw error
         }
     }
 
@@ -224,23 +232,27 @@ const PostDetail = () => {
     };
 
     const handleAddReply = async (commentId, postId) => {
-        const userId = authUser?._id
-        const postsId = postId?._id
-        const replyText = reply[commentId]
-        const res = await dispatch(addReply({ userId, postsId, commentId, replyText }))
-        // console.log(res, "res in handleAddReply")
-        if (res.meta.requestStatus === 'fulfilled') {
-            setReply(prev => ({ ...prev, [commentId]: '' }))
-            handleGetReply(commentId)
-        }
-        if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not added')
+        try {
+            const userId = authUser?._id
+            const postsId = postId?._id
+            const replyText = reply[commentId]
+            const res = await dispatch(addReply({ userId, postsId, commentId, replyText }))
+            // console.log(res, "res in handleAddReply")
+            if (res.meta.requestStatus === 'fulfilled') {
+                setReply(prev => ({ ...prev, [commentId]: '' }))
+                handleGetReply(commentId)
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.payload || 'reply is not added')
+            }
+        } catch (error) {
+            throw error
         }
     }
 
     //------------------ get reply ----------------------------
     const handleGetReply = async (commentId) => {
-        console.log(commentId, "-------------handleGetReply----------")
+        // console.log(commentId, "-------------handleGetReply----------")
         try {
             const res = await dispatch(getReply(commentId));
             console.log(res, "res of get reply")
@@ -252,7 +264,7 @@ const PostDetail = () => {
             }
             console.log(replyData, "--------- reply data ------")
         } catch (error) {
-            console.log(error);
+            throw error;
         }
     };
 
@@ -264,30 +276,36 @@ const PostDetail = () => {
     }
 
     const handleUpdateReply = async (commentId, replyId) => {
-        console.log(commentId, "------ handleUpdateReply -----------")
-        const data = { id: replyId, text: editedReply }
-        const res = await dispatch(updateReply(data))
-        // console.log(res, "response in handleUpdateReply")
-        if (res.meta.requestStatus === 'fulfilled') {
-            setEditedReply('')
-            setEditReplyId(null)
-            handleGetReply(commentId)
-        }
-        if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not updated')
+        try {
+            const data = { id: replyId, text: editedReply }
+            const res = await dispatch(updateReply(data))
+            // console.log(res, "response in handleUpdateReply")
+            if (res.meta.requestStatus === 'fulfilled') {
+                setEditedReply('')
+                setEditReplyId(null)
+                handleGetReply(commentId)
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.payload || 'reply is not updated')
+            }
+        } catch (error) {
+            throw error
         }
     }
 
     //------------ delete reply -------------------------
     const handleDeleteReply = async (replyId, commentId) => {
-        console.log(commentId, "--------- handleDeleteReply -------------")
-        const res = await dispatch(deleteReply(replyId))
-        // console.log(res, "response in handleDeleteReply")
-        if (res.meta.requestStatus === 'fulfilled') {
-            handleGetReply(commentId)
-        }
-        if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not deleted')
+        try {
+            const res = await dispatch(deleteReply(replyId))
+            // console.log(res, "response in handleDeleteReply")
+            if (res.meta.requestStatus === 'fulfilled') {
+                handleGetReply(commentId)
+            }
+            if (res.meta.requestStatus === 'rejected') {
+                toast.error(res.payload || 'reply is not deleted')
+            }
+        } catch (error) {
+            throw error
         }
     }
 

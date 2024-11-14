@@ -96,6 +96,10 @@ const UserProfile = () => {
         navigate('/dashboard/archivepost')
     }
 
+    const handlePostClick = () => {
+        navigate('/dashboard/userpost')
+    }
+
     return (
         <>
             <div className="container mt-5 mb-5 ">
@@ -103,34 +107,34 @@ const UserProfile = () => {
                 <div className='col-12 text-center '>
                     <button className='btn btn-outline-dark my-4' onClick={handleShow}>Edit Profile</button>
                 </div>
-                <div className="row no-gutters">
+                <div className="row no-gutters justify-content-center">
                     <div className="col-md-4 col-lg-4 px-0">
                         <img src={profileData && profileData?.profile ? `${BASE_URL}/${profileData?.profile}` : user} style={{ objectFit: 'cover' }} />
                     </div>
-                    <div className="col-md-8 col-lg-8 px-0">
+                    <div className="col-md-4 col-lg-4 px-0 ">
                         <div className="d-flex flex-column">
-                            <div className="d-flex flex-row justify-content-between align-items-center p-4 bg-dark text-white">
+                            <div className="d-flex  justify-content-center p-4 bg-dark text-white">
                                 <h3 className="display-5">{profileData?.fullName}</h3></div>
-                            <div className="p-3 bg-black text-white">
+                            <div className="p-3 bg-black d-flex justify-content-center text-white">
                                 <h5>{profileData?.email}</h5>
                             </div>
-                            <div className="d-md-flex flex-row text-white">
-                                <div className="p-4 w-100 bg-primary text-center skill-block">
-                                    <h4>{post}</h4>
-                                    <h6>Post</h6>
+                            <div className="d-flex flex-row text-white">
+                                <div className="py-4 w-100 bg-primary text-center " onClick={handlePostClick}>
+                                    <h2>{post}</h2>
+                                    <h3>Post</h3>
                                 </div>
-                                <div className="p-3 w-100 bg-success text-center skill-block" onClick={handleArchivePostClick}>
-                                    <h4>{archivePost}</h4>
-                                    <h6>Archived</h6>
+                                <div className="py-3 w-100 bg-success text-center " onClick={handleArchivePostClick}>
+                                    <h2>{archivePost}</h2>
+                                    <h3>Archived</h3>
                                 </div>
-                                <div className="p-3 w-100 bg-warning text-center skill-block">
+                                {/* <div className="p-3 w-100 bg-warning text-center skill-block">
                                     <h4>30</h4>
                                     <h6>Tag</h6>
                                 </div>
                                 <div className="p-3 w-100 bg-danger text-center skill-block" >
                                     <h4>20</h4>
                                     <h6>Follower</h6>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

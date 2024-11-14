@@ -20,21 +20,21 @@ const Login = () => {
     const handleLoginSubmit = async (data) => {
         try {
             const loginDetail = await dispatch(userLogin(data))
-            console.log(data, "--------- data-------------")
+            console.log(loginDetail, "--------- loginDetail-------------")
             if (loginDetail.meta.requestStatus === 'fulfilled') {
-                toast.success("Login sucessfully", {
+                toast.success("Login successfully", {
                     onClose: () => {
-                        navigate('/dashboard/posts')
-                    }
-                })
-            }
-            if (loginDetail.meta.requestStatus === 'rejected') {
-                toast.error(loginDetail.error.message || 'login failed')
+                        navigate('/dashboard/posts');
+                    },
+                });
+            } else if (loginDetail.meta.requestStatus === 'rejected') {
+                toast.error(loginDetail.payload);
             }
         } catch (error) {
-            toast.error("login failed")
+            throw error
         }
     }
+
     return (
         <>
             <div className='main-container'>

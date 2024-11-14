@@ -11,72 +11,92 @@ const initialState = {
 }
 
 //---------------- add reply ------------------------
-export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, commentId, replyText }) => {
-    const paylaod = {
-        parentId: commentId,
-        userId: userId,
-        postId: postsId,
-        commentReply: replyText
+export const addReply = createAsyncThunk('/addReply', async ({ userId, postsId, commentId, replyText }, { rejectWithValue }) => {
+    try {
+        const payload = {
+            parentId: commentId,
+            userId: userId,
+            postId: postsId,
+            commentReply: replyText
+        }
+        // console.log(payload, " ----- add reply payload -----")
+        const res = await axios.post(`${BASE_URL}/reply/createReply`, payload)
+        // console.log(res.data.data, "response in slice")
+        return res.data.data
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message)
     }
-    // console.log(paylaod, " ----- add reply payload -----")
-    const res = await axios.post(`${BASE_URL}/reply/createReply`, paylaod)
-    // console.log(res.data.data, "response in slice")
-    return res.data.data
 })
 
 //---------------- get reply ------------------------
-export const getReply = createAsyncThunk('/getReply', async (commentId) => {
-    const token = Cookies.get('token')
-    const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
+export const getReply = createAsyncThunk('/getReply', async (commentId, { rejectWithValue }) => {
+    try {
+        const token = Cookies.get('token')
+        const res = await axios.get(`${BASE_URL}/reply/getReply/${commentId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             }
-        }
-    )
-    console.log(res, "--------- reply data ------")
-    return res.data
+        )
+        console.log(res, "--------- reply data ------")
+        return res.data
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message)
+    }
 
 })
 
 //---------------- update reply ------------------------
-export const updateReply = createAsyncThunk('updateReply', async (data) => {
-    // console.log(data.id, "replyId in slice")
-    // console.log(data.text, "reply data in slice")
-    const token = Cookies.get('token')
-    const res = await axios.put(`${BASE_URL}/reply/updateReply/${data.id}`, {
-        commentReply: data.text
-    }, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    // console.log(res, "response in update Slice")
-    return res.data
+export const updateReply = createAsyncThunk('updateReply', async (data, { rejectWithValue }) => {
+    try {
+        // console.log(data.id, "replyId in slice")
+        // console.log(data.text, "reply data in slice")
+        const token = Cookies.get('token')
+        const res = await axios.put(`${BASE_URL}/reply/updateReply/${data.id}`, {
+            commentReply: data.text
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        // console.log(res, "response in update Slice")
+        return res.data
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message)
+    }
 })
 
 //---------------- delete reply ------------------------
-export const deleteReply = createAsyncThunk('/deleteReply', async (replyId) => {
-    const token = Cookies.get('token')
-    const res = await axios.delete(`${BASE_URL}/reply/deleteReply/${replyId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    // console.log(res, "res in delete Reply")
-    return res.data
+export const deleteReply = createAsyncThunk('/deleteReply', async (replyId, {   rejectWithValue }) => {
+    try {
+        const token = Cookies.get('token')
+        const res = await axios.delete(`${BASE_URL}/reply/deleteReply/${replyId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        // console.log(res, "res in delete Reply")
+        return res.data
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message)
+    }
 })
 
-export const deleteReplyByAuthorizedUser = createAsyncThunk('/deleteReplyByAuthUser', async (replyId) => {
-    console.log(replyId, "----------- replyId ---------------")
-    const token = Cookies.get('token')
-    const res = await axios.delete(`${BASE_URL}/reply/deleteReplyByAuthUser/${replyId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    console.log(res, "res in delete Reply by auth user")
-    return res.data
+export const deleteReplyByAuthorizedUser = createAsyncThunk('/deleteReplyByAuthUser', async (replyId, { rejectWithValue }) => {
+    try {
+        console.log(replyId, "----------- replyId ---------------")
+        const token = Cookies.get('token')
+        const res = await axios.delete(`${BASE_URL}/reply/deleteReplyByAuthUser/${replyId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(res, "res in delete Reply by auth user")
+        return res.data
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message)
+    }
 })
 const replySlice = createSlice({
     name: 'reply',

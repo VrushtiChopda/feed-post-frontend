@@ -11,18 +11,18 @@ const initialState = {
 }
 
 //---------------- register user ------------------
-export const userRegister = createAsyncThunk('/register', async (userData) => {
+export const userRegister = createAsyncThunk('/register', async (userData, { rejectWithValue }) => {
     try {
         const registerData = await axios.post(`${BASE_URL}/user/register`, userData)
         console.log(registerData.data, "----------- register data ----------------")
         return registerData.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message || 'Registration failed');
     }
 })
 
 //---------------- login user ---------------------
-export const userLogin = createAsyncThunk('/login', async (userData) => {
+export const userLogin = createAsyncThunk('/login', async (userData, { rejectWithValue }) => {
     console.log(userData, "------- userData -------- ")
     try {
         const data = await axios.post(`${BASE_URL}/user/login`, userData)
@@ -35,7 +35,8 @@ export const userLogin = createAsyncThunk('/login', async (userData) => {
         }
         return data.data
     } catch (error) {
-        throw error
+        console.log(error.response?.data?.message, "=================")
+        return rejectWithValue(error.response?.data?.message || 'Login failed');
     }
 })
 
@@ -56,7 +57,7 @@ export const userProfile = createAsyncThunk('/profile', async () => {
 
 //-------------- update user -----------------------
 
-export const updateUserProfile = createAsyncThunk('/updateProfile', async ({ userId, userData }) => {
+export const updateUserProfile = createAsyncThunk('/updateProfile', async ({ userId, userData }, { rejectWithValue }) => {
     const token = Cookies.get('token')
     try {
         const data = await axios.put(`${BASE_URL}/user/updateuser/${userId}`, userData,
@@ -65,7 +66,7 @@ export const updateUserProfile = createAsyncThunk('/updateProfile', async ({ use
         console.log(data, "--------updateUserProfile--------")
         return data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 

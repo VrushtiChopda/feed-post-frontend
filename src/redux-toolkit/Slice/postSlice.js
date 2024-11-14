@@ -11,7 +11,7 @@ const initialState = {
 }
 
 //---------------- add post ------------------------
-export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
+export const addPost = createAsyncThunk('/addPost', async ({ postData }, { rejectWithValue }) => {
     console.log(postData, "--------- postData in slice --------------")
     const token = Cookies.get('token')
     try {
@@ -26,7 +26,7 @@ export const addPost = createAsyncThunk('/addPost', async ({ postData }) => {
         return data.data
     } catch (error) {
         console.log(error)
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 
@@ -43,7 +43,7 @@ export const getPost = createAsyncThunk('/getPost', async () => {
 })
 
 //---------------- update post ------------------------
-export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postData }) => {
+export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postData }, { rejectWithValue }) => {
     const token = Cookies.get('token')
     // console.log(token, "token")
     try {
@@ -56,12 +56,12 @@ export const updatePost = createAsyncThunk('/updatePost', async ({ postId, postD
         // console.log(data, "data in update post")
         return data.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 
 //---------------- delete post ------------------------
-export const deletePost = createAsyncThunk('/deletePost', async (postId) => {
+export const deletePost = createAsyncThunk('/deletePost', async (postId, { rejectWithValue }) => {
     const token = Cookies.get('token')
     try {
         const data = await axios.delete(`${BASE_URL}/post/deletePost/${postId}`,
@@ -72,12 +72,12 @@ export const deletePost = createAsyncThunk('/deletePost', async (postId) => {
             })
         return data.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message || "post not deleted")
     }
 })
 
 //---------------- archive post -------------------------
-export const archivePost = createAsyncThunk('/archivePost', async ({postId, archiveStatus}) => {
+export const archivePost = createAsyncThunk('/archivePost', async ({ postId, archiveStatus }, { rejectWithValue }) => {
     console.log(archiveStatus, "status")
     const token = Cookies.get('token')
     console.log(token, "---------- token in archive post -------")
@@ -90,7 +90,7 @@ export const archivePost = createAsyncThunk('/archivePost', async ({postId, arch
         console.log(data, "------- data in archivePost slice -----------")
         return data.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 

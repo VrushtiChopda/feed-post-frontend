@@ -30,7 +30,7 @@ const Registration = () => {
                 })
             }
             if (regData.meta.requestStatus === 'rejected') {
-                // toast.error(regData.error.message || 'registration failed')
+                toast.error(regData.payload || 'registration failed')
             }
         } catch (error) {
             throw error

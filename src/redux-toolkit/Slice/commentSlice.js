@@ -10,7 +10,7 @@ const initialState = {
 }
 
 //------------- add comment -----------------------
-export const addComment = createAsyncThunk('/addcomment', async ({ postId, comment }) => {
+export const addComment = createAsyncThunk('/addcomment', async ({ postId, comment }, { rejectWithValue }) => {
     const token = Cookies.get('token')
     console.log(token, "----- token while add comment -------")
     try {
@@ -23,7 +23,7 @@ export const addComment = createAsyncThunk('/addcomment', async ({ postId, comme
         console.log(res, "res in addComment")
         return res.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 
@@ -41,7 +41,7 @@ export const getComment = createAsyncThunk('/getcomment', async (postId) => {
 })
 
 //------------- edit comment -----------------------
-export const editComment = createAsyncThunk('/updatecomment', async ({ commentId, comment }) => {
+export const editComment = createAsyncThunk('/updatecomment', async ({ commentId, comment }, { rejectWithValue }) => {
     const token = Cookies.get('token')
     try {
         const res = await axios.put(`${BASE_URL}/comment/updateComment/${commentId}`, { comment },
@@ -51,12 +51,12 @@ export const editComment = createAsyncThunk('/updatecomment', async ({ commentId
         console.log(res, "response in edit Comment")
         return res.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 
 //------------- delete comment -----------------------
-export const deleteComment = createAsyncThunk('/deleteComment', async (commentId) => {
+export const deleteComment = createAsyncThunk('/deleteComment', async (commentId, { rejectWithValue }) => {
     const token = Cookies.get('token')
     try {
         const res = await axios.delete(`${BASE_URL}/comment/deleteComment/${commentId}`, {
@@ -66,12 +66,12 @@ export const deleteComment = createAsyncThunk('/deleteComment', async (commentId
         console.log(res, 'deleteComment')
         return res.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 
 //------------- delete comment by auth user -----------------------
-export const deleteCommentByAuthorizedUser = createAsyncThunk('/deleteCommentByUSer', async (commentId) => {
+export const deleteCommentByAuthorizedUser = createAsyncThunk('/deleteCommentByUSer', async (commentId, { rejectWithValue }) => {
     const token = Cookies.get('token')
     try {
         const res = await axios.delete(`${BASE_URL}/comment/deleteCommentByUser/${commentId}`, {
@@ -81,7 +81,7 @@ export const deleteCommentByAuthorizedUser = createAsyncThunk('/deleteCommentByU
         console.log(res, 'deleteComment')
         return res.data
     } catch (error) {
-        throw error
+        return rejectWithValue(error.response?.data?.message)
     }
 })
 

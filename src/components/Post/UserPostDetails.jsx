@@ -106,7 +106,7 @@ const UserPostDetails = () => {
                 navigate('/dashboard/userpost')
             }
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'post is not updated')
+                toast.error(res.payload || 'post is not updated')
             }
         } catch (error) {
             console.log(error)
@@ -120,7 +120,7 @@ const UserPostDetails = () => {
             navigate('/dashboard/userpost')
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'post is not deleted')
+            toast.error(res.payload || 'post is not deleted')
         }
     }
 
@@ -159,7 +159,7 @@ const UserPostDetails = () => {
                 handleGetComment(postId)
             }
             if (res.meta.requestStatus === 'rejected') {
-                toast.error(res.error.message || 'comment is not added')
+                toast.error(res.payload || 'comment is not added')
             }
         } catch (error) {
             console.log(error)
@@ -180,7 +180,7 @@ const UserPostDetails = () => {
             setEditedComment('')
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'comment is noy updated')
+            toast.error(res.payload || 'comment is noy updated')
         }
         // console.log(res, 'response in handle updated comment');
     };
@@ -192,7 +192,7 @@ const UserPostDetails = () => {
             handleGetComment(postId)
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'comment not deleted')
+            toast.error(res.payload || 'comment not deleted')
         }
     }
 
@@ -217,7 +217,7 @@ const UserPostDetails = () => {
             handleGetReply(commentId)
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not added')
+            toast.error(res.payload || 'reply is not added')
         }
     }
 
@@ -255,7 +255,7 @@ const UserPostDetails = () => {
             handleGetReply(commentId)
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not updated')
+            toast.error(res.payload || 'reply is not updated')
         }
     }
 
@@ -276,7 +276,7 @@ const UserPostDetails = () => {
             handleGetReply(commentId)
         }
         if (res.meta.requestStatus === 'rejected') {
-            toast.error(res.error.message || 'reply is not deleted')
+            toast.error(res.payload || 'reply is not deleted')
         }
     }
 

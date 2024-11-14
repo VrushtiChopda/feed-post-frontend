@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { getPost } from '../../redux-toolkit/Slice/postSlice';
 import { useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
-import { BiArchiveIn } from "react-icons/bi";
+
 const Post = () => {
     const [postDetail, setPostDetail] = useState(null);
     const [show, setShow] = useState(false);
